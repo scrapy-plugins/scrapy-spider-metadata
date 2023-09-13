@@ -23,7 +23,10 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+    "pydantic",
+    "scrapy",
+]
 dynamic = ["version"]
 
 [project.urls]

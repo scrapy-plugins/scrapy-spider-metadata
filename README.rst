@@ -29,5 +29,5 @@ Scrapy spiders with usable metadata.
 
 .. description ends
 
-* Documentation: https://zyte-parsers.readthedocs.io/en/latest/
+* Documentation: https://scrapy-spider-metadata.readthedocs.io/en/latest/
 * License: BSD 3-clause

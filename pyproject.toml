@@ -48,3 +48,9 @@ module = [
 ]
 # Allow test functions to be untyped
 disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = [
+    "scrapy.*",
+]
+ignore_missing_imports = true

@@ -18,8 +18,8 @@ scrapy-spider-metadata
    :target: https://codecov.io/gh/scrapy-plugins/scrapy-spider-metadata
    :alt: Coverage report
 
-.. image:: https://readthedocs.org/projects/scrapy-spider-metadata/badge/?version=stable
-   :target: https://scrapy-spider-metadata.readthedocs.io/en/stable/?badge=stable
+.. image:: https://readthedocs.org/projects/scrapy-spider-metadata/badge/?version=latest
+   :target: https://scrapy-spider-metadata.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation status
 
 .. description starts

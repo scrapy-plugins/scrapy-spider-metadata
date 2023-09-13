@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scrapy-spider-metadata"
+description = "Utilities to extend Scrapy spiders with usable metadata."
+authors = [{name = "Zyte Group Ltd", email = "info@zyte.com"}]
+readme = "README.rst"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+requires-python = ">=3.8"
+dependencies = []
+dynamic = ["version"]
+
+[project.urls]
+Source = "https://github.com/scrapy-plugins/scrapy-spider-metadata"
+
+[tool.setuptools.dynamic]
+version = {attr = "scrapy_spider_metadata.__version__"}
+
+[tool.setuptools.package-data]
+scrapy_spider_metadata = ["py.typed"]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[[tool.mypy.overrides]]
+module = [
+    "tests.*",
+]
+# Allow test functions to be untyped
+disallow_untyped_defs = false

@@ -1,0 +1,21 @@
+# Python
+*.pyc
+*.pyo
+/build/
+/dist/
+*.egg-info
+
+# Mac OS
+*.DS_Store
+
+# IDE
+/.idea/
+
+.cache/
+.coverage
+.ipynb_checkpoints
+.mypy_cache/
+.pytest_cache/
+.tox/
+coverage.xml
+htmlcov/

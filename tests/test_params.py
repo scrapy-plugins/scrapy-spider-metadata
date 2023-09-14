@@ -4,7 +4,11 @@ from pydantic import BaseModel, Field, ValidationError
 from pytest import raises
 from scrapy import Spider
 
-from scrapy_spider_metadata import get_spider_param_schema, parse_spider_kwargs
+from scrapy_spider_metadata import (
+    ParamSpiderMixin,
+    get_spider_param_schema,
+    parse_spider_kwargs,
+)
 
 from . import get_spider
 
@@ -151,6 +155,20 @@ def test_parse_spider_kwargs_validate():
         def __init__(self, *args, **kwargs):
             kwargs = parse_spider_kwargs(self, kwargs)
             super().__init__(*args, **kwargs)
+
+    with raises(ValidationError):
+        get_spider(ParamSpider, kwargs={"foo": "2"})
+
+
+def test_param_spider_mixin():
+    class Params(BaseModel):
+        foo: bool
+
+    class ParamSpider(ParamSpiderMixin, Spider):
+        name = "params"
+        meta = {
+            "params": Params,
+        }
 
     with raises(ValidationError):
         get_spider(ParamSpider, kwargs={"foo": "2"})

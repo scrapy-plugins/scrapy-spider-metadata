@@ -80,3 +80,9 @@ def parse_spider_kwargs(spider, kwargs, /):
         return kwargs
     parsed_params = param_model(**kwargs)
     return parsed_params.model_dump()
+
+
+class ParamSpiderMixin:
+    def __init__(self, *args, **kwargs):
+        kwargs = parse_spider_kwargs(self, kwargs)
+        super().__init__(*args, **kwargs)

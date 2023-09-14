@@ -1,3 +1,5 @@
+from enum import Enum, IntEnum
+
 from pydantic import BaseModel, Field, ValidationError
 from pytest import raises
 from scrapy import Spider
@@ -5,6 +7,16 @@ from scrapy import Spider
 from scrapy_spider_metadata import get_spider_param_schema, parse_spider_kwargs
 
 from . import get_spider
+
+
+class FruitEnum(str, Enum):
+    pear = "pear"
+    banana = "banana"
+
+
+class ToolEnum(IntEnum):
+    spanner = 1
+    wrench = 2
 
 
 def test_get_spider_param_schema():
@@ -27,6 +39,23 @@ def test_get_spider_param_schema():
             pattern=pattern,
         )
         yesno: bool
+        fruit: FruitEnum = Field(
+            title="Fruit",
+            json_schema_extra={
+                "enumMeta": {
+                    FruitEnum.pear: {
+                        "title": "Pear",
+                        "description": "Pyrus fruit",
+                    },
+                    FruitEnum.banana: {
+                        "title": "Banana",
+                        "description": "Love fruit",
+                    },
+                },
+            },
+        )
+        tool: ToolEnum = ToolEnum.wrench
+        # TODO: Cover nullable values.
 
     class ParamSpider(Spider):
         name = "params"
@@ -64,8 +93,28 @@ def test_get_spider_param_schema():
                 "title": "Yesno",
                 "type": "boolean",
             },
+            "fruit": {
+                "title": "Fruit",
+                "type": "string",
+                "enum": ["pear", "banana"],
+                "enumMeta": {
+                    "pear": {
+                        "title": "Pear",
+                        "description": "Pyrus fruit",
+                    },
+                    "banana": {
+                        "title": "Banana",
+                        "description": "Love fruit",
+                    },
+                },
+            },
+            "tool": {
+                "type": "integer",
+                "enum": [1, 2],
+                "default": 2,
+            },
         },
-        "required": ["number_without_default", "phone", "yesno"],
+        "required": ["number_without_default", "phone", "yesno", "fruit"],
         "title": "Params",
         "type": "object",
     }

@@ -1,3 +1,4 @@
+====================================
 scrapy-spider-metadata documentation
 ====================================
 
@@ -8,4 +9,5 @@ scrapy-spider-metadata documentation
 .. toctree::
    :maxdepth: 1
 
+   params
    changes

@@ -2,8 +2,10 @@ __version__ = "0.0.0"
 
 from collections.abc import Mapping
 from enum import Enum
+from typing import Any, Dict, Type
 
 from pydantic import BaseModel
+from scrapy import Spider
 
 
 def _is_subclass(cls, parent):
@@ -65,7 +67,12 @@ def _post_process_param_schema(param_schema):
         _normalize_enum_meta_keys(value)
 
 
-def get_spider_param_schema(spidercls, /):
+def get_spider_param_schema(spidercls: Type[Spider], /) -> Dict[Any, Any]:
+    """Return a :class:`dict` with the :ref:`parameter definition
+    <define-params>` of *spidercls* as `JSON Schema`_.
+
+    .. _JSON Schema: https://json-schema.org/
+    """
     param_model = _load_param_model(spidercls)
     param_schema = param_model.model_json_schema()
     # TODO: Consider achieving the same using a custom GenerateJsonSchema
@@ -74,7 +81,7 @@ def get_spider_param_schema(spidercls, /):
     return param_schema
 
 
-def parse_spider_kwargs(spider, kwargs, /):
+def _parse_spider_kwargs(spider, kwargs, /):
     param_model = _load_param_model(spider.__class__)
     if param_model is None:
         return kwargs
@@ -83,6 +90,14 @@ def parse_spider_kwargs(spider, kwargs, /):
 
 
 class ParamSpiderMixin:
+    """Validates and type-converts spider arguments according to :ref:`spider
+    parameters <define-params>`.
+
+    This is done before they reach the ``__init__`` method of
+    :class:`~scrapy.spiders.Spider`, which is the method that then assigns the
+    spider arguments to class variables on the spider instance.
+    """
+
     def __init__(self, *args, **kwargs):
-        kwargs = parse_spider_kwargs(self, kwargs)
+        kwargs = _parse_spider_kwargs(self, kwargs)
         super().__init__(*args, **kwargs)

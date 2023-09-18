@@ -13,7 +13,7 @@ from . import get_spider
 USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
 
 
-def test_mixin_convert():
+def test_convert():
     class Params(BaseModel):
         foo: int
 
@@ -21,19 +21,25 @@ def test_mixin_convert():
         name = "params"
 
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
+    assert isinstance(spider.args, Params)
     assert spider.args.foo == 1
     assert spider.foo == "1"
 
 
-def test_mixin_validate():
+def test_no_params():
     class Params(BaseModel):
-        foo: bool
+        pass
 
     class ParamSpider(Parameterized[Params], Spider):
         name = "params"
 
-    with raises(ValidationError):
-        get_spider(ParamSpider, kwargs={"foo": "2"})
+    spider = get_spider(ParamSpider, kwargs={"foo": "1"})
+    assert isinstance(spider.args, Params)
+    assert ParamSpider.get_param_schema() == {
+        "properties": {},
+        "title": "Params",
+        "type": "object",
+    }
 
 
 def test_schema():
@@ -46,6 +52,10 @@ def test_schema():
     class ToolEnum(IntEnum):
         spanner = 1
         wrench = 2
+
+    class WaterEnum(str, Enum):
+        still = "still"
+        sparkling = "sparkling"
 
     class Params(BaseModel):
         field: int = Field(
@@ -86,6 +96,22 @@ def test_schema():
             default=...,
         )
         tool: ToolEnum = ToolEnum.wrench
+        water: WaterEnum = Field(
+            json_schema_extra={
+                "enumMeta": {
+                    "still": {
+                        "title": "Still water",
+                    },
+                    "sparkling": {
+                        "title": "Sparkling water",
+                        "video": "https://www.youtube.com/clip/UgkxxervFpv38ILyF_cZeHuat3sVNwmCy8pF",
+                    },
+                },
+            },
+            # pydantic 1.x
+            # https://github.com/pydantic/pydantic/issues/3753#issuecomment-1060850457
+            default=...,
+        )
         # TODO: Cover nullable values.
 
     class ParamSpider(Parameterized[Params], Spider):
@@ -141,11 +167,36 @@ def test_schema():
                 "enum": [1, 2],
                 "default": 2,
             },
+            "water": {
+                "type": "string",
+                "enum": ["still", "sparkling"],
+                "enumMeta": {
+                    "still": {
+                        "title": "Still water",
+                    },
+                    "sparkling": {
+                        "title": "Sparkling water",
+                        "video": "https://www.youtube.com/clip/UgkxxervFpv38ILyF_cZeHuat3sVNwmCy8pF",
+                    },
+                },
+            },
         },
-        "required": ["number_without_default", "phone", "yesno", "fruit"],
+        "required": ["number_without_default", "phone", "yesno", "fruit", "water"],
         "title": "Params",
         "type": "object",
     }
     if USING_PYDANTIC_1:
         expected_schema["properties"]["tool"]["title"] = "Tool"
+        expected_schema["properties"]["water"]["title"] = "Water"
     assert schema == expected_schema
+
+
+def test_validate():
+    class Params(BaseModel):
+        foo: bool
+
+    class ParamSpider(Parameterized[Params], Spider):
+        name = "params"
+
+    with raises(ValidationError):
+        get_spider(ParamSpider, kwargs={"foo": "2"})

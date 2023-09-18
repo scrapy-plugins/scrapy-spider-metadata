@@ -6,17 +6,6 @@ from pydantic import BaseModel
 from ._utils import get_generic_param
 
 
-def _is_subclass(cls, parent):
-    try:
-        return issubclass(cls, parent)
-    except TypeError:
-        return False
-
-
-def _load_param_model(spidercls, /):
-    return get_generic_param(spidercls, Parameterized)
-
-
 def _unwrap_allof(value, defs, /):
     allof = value.pop("allOf", None)
     if allof is None:
@@ -26,9 +15,6 @@ def _unwrap_allof(value, defs, /):
         if ref:
             def_id = ref.rsplit("/", maxsplit=1)[1]
             entry.update(defs[def_id])
-        if "type" in value and "type" in entry:
-            new_type = entry.pop("type")
-            value["type"] = [value["type"], new_type]
         entry.pop("title", None)
         value.update(entry)
 
@@ -65,13 +51,6 @@ def _post_process_param_schema(param_schema):
         _normalize_enum_meta_keys(value)
 
 
-def _parse_spider_kwargs(spidercls, kwargs, /):
-    param_model = _load_param_model(spidercls)
-    if param_model is None:
-        return kwargs
-    return param_model(**kwargs)
-
-
 ParamSpecT = TypeVar("ParamSpecT")
 
 
@@ -82,9 +61,10 @@ class Parameterized(Generic[ParamSpecT]):
     """
 
     def __init__(self, *args, **kwargs):
+        param_model = get_generic_param(self.__class__, Parameterized)
         #: :ref:`Spider arguments <spiderargs>` parsed according to the
         #: :ref:`spider parameter specification <define-params>`.
-        self.args: BaseModel = _parse_spider_kwargs(self.__class__, kwargs)
+        self.args: BaseModel = param_model(**kwargs)
         super().__init__(*args, **kwargs)
 
     @classmethod
@@ -94,7 +74,7 @@ class Parameterized(Generic[ParamSpecT]):
 
         .. _JSON Schema: https://json-schema.org/
         """
-        param_model = _load_param_model(cls)
+        param_model = get_generic_param(cls, Parameterized)
         try:
             param_schema = param_model.model_json_schema()
         except AttributeError:  # pydantic 1.x

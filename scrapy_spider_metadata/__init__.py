@@ -57,12 +57,24 @@ def _normalize_enum_meta_keys(value, /):
         enum_meta[key.value] = enum_meta.pop(key)
 
 
+def _update_old_pydantic(value, /):
+    extra = value.pop("json_schema_extra", None)
+    if extra:
+        value.update(extra)
+
+    if "enum" in value:
+        default = value.get("default", None)
+        if default is not None:
+            value["default"] = default.value
+
+
 def _post_process_param_schema(param_schema):
     defs = param_schema.pop("$defs", None)
     params = param_schema.get("properties", None)
     if not params:
         return
     for value in params.values():
+        _update_old_pydantic(value)
         _unwrap_allof(value, defs)
         _normalize_enum_meta_keys(value)
 
@@ -74,7 +86,10 @@ def get_spider_param_schema(spidercls: Type[Spider], /) -> Dict[Any, Any]:
     .. _JSON Schema: https://json-schema.org/
     """
     param_model = _load_param_model(spidercls)
-    param_schema = param_model.model_json_schema()
+    try:
+        param_schema = param_model.model_json_schema()
+    except AttributeError:  # pydantic 1.x
+        param_schema = param_model.schema()
     # TODO: Consider achieving the same using a custom GenerateJsonSchema
     # subclass and passing it to `model_json_schema()` above.
     _post_process_param_schema(param_schema)
@@ -86,7 +101,10 @@ def _parse_spider_kwargs(spider, kwargs, /):
     if param_model is None:
         return kwargs
     parsed_params = param_model(**kwargs)
-    return parsed_params.model_dump()
+    try:
+        return parsed_params.model_dump()
+    except AttributeError:  # pydantic 1.x
+        return parsed_params.dict()
 
 
 class ParamSpiderMixin:

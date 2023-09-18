@@ -1,12 +1,16 @@
 from enum import Enum, IntEnum
 
+from packaging import version
 from pydantic import BaseModel, Field, ValidationError
+from pydantic.version import VERSION as PYDANTIC_VERSION
 from pytest import raises
 from scrapy import Spider
 
 from scrapy_spider_metadata import ParamSpiderMixin, get_spider_param_schema
 
 from . import get_spider
+
+USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
 
 
 def test_mixin_convert():
@@ -63,6 +67,9 @@ def test_schema():
             min_length=3,
             max_length=100,
             pattern=pattern,
+            # pydantic 1.x
+            # https://github.com/pydantic/pydantic/issues/3753#issuecomment-1060850457
+            default=...,
         )
         yesno: bool
         fruit: FruitEnum = Field(
@@ -79,6 +86,9 @@ def test_schema():
                     },
                 },
             },
+            # pydantic 1.x
+            # https://github.com/pydantic/pydantic/issues/3753#issuecomment-1060850457
+            default=...,
         )
         tool: ToolEnum = ToolEnum.wrench
         # TODO: Cover nullable values.
@@ -90,7 +100,7 @@ def test_schema():
         }
 
     schema = get_spider_param_schema(ParamSpider)
-    assert schema == {
+    expected_schema = {
         "properties": {
             "field": {
                 "title": "A Team",
@@ -144,3 +154,6 @@ def test_schema():
         "title": "Params",
         "type": "object",
     }
+    if USING_PYDANTIC_1:
+        expected_schema["properties"]["tool"]["title"] = "Tool"
+    assert schema == expected_schema

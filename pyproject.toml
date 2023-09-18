@@ -24,7 +24,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "packaging",
+    "packaging>=14.1",
     "pydantic>=1",
     "scrapy",
 ]

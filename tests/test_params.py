@@ -21,7 +21,8 @@ def test_mixin_convert():
         name = "params"
 
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
-    assert spider.foo == 1
+    assert spider.args.foo == 1
+    assert spider.foo == "1"
 
 
 def test_mixin_validate():

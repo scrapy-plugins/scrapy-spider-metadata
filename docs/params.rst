@@ -2,21 +2,7 @@
 Parameters
 ==========
 
-:ref:`Scrapy spiders <topics-spiders>` support parameters.
-
-When running a spider, you can pass key-value pairs as arguments for your
-spider, either with the ``-a`` command-line switch of the :command:`crawl` or
-:command:`runspider` commands, or as keyword arguments for the
-:meth:`Crawler.crawl <scrapy.crawler.Crawler.crawl>` method, usually passed
-through :meth:`CrawlerProcess.crawl <scrapy.crawler.CrawlerProcess.crawl>` or
-:meth:`CrawlerRunner.crawl <scrapy.crawler.CrawlerRunner.crawl>` when
-:ref:`using Scrapy as a library <run-from-script>`.
-
-The ``__init__`` method of :class:`Spider <scrapy.spiders.Spider>` receives
-those keyword arguments and sets them as spider variables, so that you can
-access them from your spider methods.
-
-However, parameter support in Scrapy has some limitations:
+:ref:`Spider arguments <spiderargs>` have some limitations:
 
 -   There is no standard way for spiders to indicate which parameters they
     expect or support.
@@ -37,24 +23,22 @@ Defining supported parameters
 =============================
 
 To define spider parameters, define a subclass of `pydantic.BaseModel`_,
-and then point to it from the ``"params"`` key of a :class:`dict` ``meta``
-class variable of your spider:
+and then make your spider also inherit from
+:class:`~scrapy_spider_metadata.Parameterized` with your parameter
+specification class as its parameter:
 
 .. _pydantic.BaseModel: https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel
 
 .. code-block:: python
 
     from pydantic import BaseModel
-    from scrapy import Spider
+    from scrapy_spider_metadata import Parameterized
 
     class MyParams(BaseModel):
         foo: int
 
-    class MySpider(Spider):
+    class MySpider(Parameterized[MyParams], Spider):
         name = "my_spider"
-        meta = {
-            "params": MyParams,
-        }
 
 To learn how to define parameters in your `pydantic.BaseModel`_
 subclass, see the `Pydantic usage documentation
@@ -78,61 +62,37 @@ as expected.
     <https://github.com/scrapy-plugins/scrapy-spider-metadata/issues>`_, and if
     not, feel free to request it.
 
-
-Converting and validating arguments
-===================================
-
-Add the :class:`~scrapy_spider_metadata.ParamSpiderMixin` mixin to a spider
-with :ref:`defined parameters <define-params>` to make the spider:
+Defined parameters make your spider:
 
 -   Halt with an exception if there are missing arguments or any provided
     argument does not match the defined parameter validation rules.
 
--   Convert arguments to the expected type.
+-   Expose an instance of your parameter specification class, that contains the
+    parsed version of your spider arguments, e.g. converted to their expected
+    type.
 
-For example, if you modify the :ref:`example above <define-params>` to use the
-mixin:
-
-.. code-block:: python
-    :emphasize-lines: 3, 8
-
-    from pydantic import BaseModel
-    from scrapy import Spider
-    from scrapy_spider_metadata import ParamSpiderMixin
-
-    class MyParams(BaseModel):
-        foo: int
-
-    class MySpider(ParamSpiderMixin, Spider):
-        name = "my_spider"
-        meta = {
-            "params": MyParams,
-        }
-
-And then run the spider with the ``foo`` parameter set to the string ``"42"``,
-``self.foo`` in your spider will be the :class:`int` value ``42``, instead of
-``"42"``.
+For example, if you run the spider in the :ref:`example above <define-params>`
+with the ``foo`` parameter set to the string ``"42"``, ``self.args.foo`` is the
+:class:`int` value ``42`` (``self.foo`` remains ``"42"``).
 
 Also, if you do not pass a value for ``foo`` at all, the spider will not start,
 because ``foo`` is a required parameter. All parameters without a default value
 are considered required parameters.
 
-.. autoclass:: scrapy_spider_metadata.ParamSpiderMixin
-
 
 Getting the parameter specification as JSON Schema
 ==================================================
 
-Given a spider with :ref:`defined parameters <define-params>`, you can get a
-`JSON Schema`_ representation of the parameter specification of that spider
-using the :func:`~scrapy_spider_metadata.get_spider_param_schema` function:
+Given a spider class with :ref:`defined parameters <define-params>`, you can
+get a `JSON Schema`_ representation of the parameter specification of that
+spider using the :func:`~scrapy_spider_metadata.Parameterized.get_param_schema`
+class function:
 
 .. _JSON Schema: https://json-schema.org/
 
 .. code-block:: pycon
 
-    >>> from scrapy_spider_metadata import get_spider_param_schema
-    >>> get_spider_param_schema(MySpider)
+    >>> MySpider.get_param_schema()
     {'properties': {'foo': {'title': 'Foo', 'type': 'integer'}}, 'required': ['foo'], 'title': 'MyParams', 'type': 'object'}
 
 scrapy-spider-metadata uses Pydantic to generate the JSON Schema. However, it
@@ -145,4 +105,9 @@ moved into the corresponding parameter metadata instead.
     :func:`~scrapy_spider_metadata.get_spider_param_schema` may return a broken
     or incomplete schema.
 
-.. autofunction:: scrapy_spider_metadata.get_spider_param_schema
+
+Parameters API
+==============
+
+.. autoclass:: scrapy_spider_metadata.Parameterized
+    :members:

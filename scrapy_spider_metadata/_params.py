@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import Any, Dict, Generic, TypeVar
 
+from pydantic import BaseModel
+
 from ._utils import get_generic_param
 
 
@@ -67,33 +69,28 @@ def _parse_spider_kwargs(spidercls, kwargs, /):
     param_model = _load_param_model(spidercls)
     if param_model is None:
         return kwargs
-    parsed_params = param_model(**kwargs)
-    try:
-        return parsed_params.model_dump()
-    except AttributeError:  # pydantic 1.x
-        return parsed_params.dict()
+    return param_model(**kwargs)
 
 
 ParamSpecT = TypeVar("ParamSpecT")
 
 
 class Parameterized(Generic[ParamSpecT]):
-    """Validates and type-converts spider arguments according to :ref:`spider
-    parameters <define-params>`.
-
-    This is done before they reach the ``__init__`` method of
-    :class:`~scrapy.spiders.Spider`, which is the method that then assigns the
-    spider arguments to class variables on the spider instance.
+    """Validates and type-converts :ref:`spider arguments <spiderargs>` into
+    the :attr:`args` instance attribute according to the :ref:`spider parameter
+    specification <define-params>`.
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs = _parse_spider_kwargs(self.__class__, kwargs)
+        #: :ref:`Spider arguments <spiderargs>` parsed according to the
+        #: :ref:`spider parameter specification <define-params>`.
+        self.args: BaseModel = _parse_spider_kwargs(self.__class__, kwargs)
         super().__init__(*args, **kwargs)
 
     @classmethod
     def get_param_schema(cls) -> Dict[Any, Any]:
-        """:class:`dict` with the :ref:`parameter definition <define-params>`
-        of *spidercls* as `JSON Schema`_.
+        """Return a :class:`dict` with the :ref:`parameter definition
+        <define-params>` as `JSON Schema`_.
 
         .. _JSON Schema: https://json-schema.org/
         """

@@ -12,7 +12,7 @@ def _is_subclass(cls, parent):
 
 
 def _load_param_model(spidercls, /):
-    return get_generic_param(spidercls, Parametrized)
+    return get_generic_param(spidercls, Parameterized)
 
 
 def _unwrap_allof(value, defs, /):
@@ -77,7 +77,7 @@ def _parse_spider_kwargs(spidercls, kwargs, /):
 ParamSpecT = TypeVar("ParamSpecT")
 
 
-class Parametrized(Generic[ParamSpecT]):
+class Parameterized(Generic[ParamSpecT]):
     """Validates and type-converts spider arguments according to :ref:`spider
     parameters <define-params>`.
 

@@ -6,7 +6,7 @@ from pydantic.version import VERSION as PYDANTIC_VERSION
 from pytest import raises
 from scrapy import Spider
 
-from scrapy_spider_metadata import Parametrized
+from scrapy_spider_metadata import Parameterized
 
 from . import get_spider
 
@@ -17,7 +17,7 @@ def test_mixin_convert():
     class Params(BaseModel):
         foo: int
 
-    class ParamSpider(Parametrized[Params], Spider):
+    class ParamSpider(Parameterized[Params], Spider):
         name = "params"
 
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
@@ -28,7 +28,7 @@ def test_mixin_validate():
     class Params(BaseModel):
         foo: bool
 
-    class ParamSpider(Parametrized[Params], Spider):
+    class ParamSpider(Parameterized[Params], Spider):
         name = "params"
 
     with raises(ValidationError):
@@ -87,7 +87,7 @@ def test_schema():
         tool: ToolEnum = ToolEnum.wrench
         # TODO: Cover nullable values.
 
-    class ParamSpider(Parametrized[Params], Spider):
+    class ParamSpider(Parameterized[Params], Spider):
         name = "params"
 
     schema = ParamSpider.get_param_schema()

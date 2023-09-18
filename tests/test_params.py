@@ -6,7 +6,7 @@ from pydantic.version import VERSION as PYDANTIC_VERSION
 from pytest import raises
 from scrapy import Spider
 
-from scrapy_spider_metadata import Parametrized, get_spider_param_schema
+from scrapy_spider_metadata import Parametrized
 
 from . import get_spider
 
@@ -90,7 +90,7 @@ def test_schema():
     class ParamSpider(Parametrized[Params], Spider):
         name = "params"
 
-    schema = get_spider_param_schema(ParamSpider)
+    schema = ParamSpider.get_param_schema()
     expected_schema = {
         "properties": {
             "field": {

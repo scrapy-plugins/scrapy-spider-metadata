@@ -1,7 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, Generic, Type, TypeVar
-
-from scrapy import Spider
+from typing import Any, Dict, Generic, TypeVar
 
 from ._utils import get_generic_param
 
@@ -65,25 +63,8 @@ def _post_process_param_schema(param_schema):
         _normalize_enum_meta_keys(value)
 
 
-def get_spider_param_schema(spidercls: Type[Spider], /) -> Dict[Any, Any]:
-    """Return a :class:`dict` with the :ref:`parameter definition
-    <define-params>` of *spidercls* as `JSON Schema`_.
-
-    .. _JSON Schema: https://json-schema.org/
-    """
+def _parse_spider_kwargs(spidercls, kwargs, /):
     param_model = _load_param_model(spidercls)
-    try:
-        param_schema = param_model.model_json_schema()
-    except AttributeError:  # pydantic 1.x
-        param_schema = param_model.schema()
-    # TODO: Consider achieving the same using a custom GenerateJsonSchema
-    # subclass and passing it to `model_json_schema()` above.
-    _post_process_param_schema(param_schema)
-    return param_schema
-
-
-def _parse_spider_kwargs(spider, kwargs, /):
-    param_model = _load_param_model(spider.__class__)
     if param_model is None:
         return kwargs
     parsed_params = param_model(**kwargs)
@@ -106,5 +87,22 @@ class Parametrized(Generic[ParamSpecT]):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs = _parse_spider_kwargs(self, kwargs)
+        kwargs = _parse_spider_kwargs(self.__class__, kwargs)
         super().__init__(*args, **kwargs)
+
+    @classmethod
+    def get_param_schema(cls) -> Dict[Any, Any]:
+        """:class:`dict` with the :ref:`parameter definition <define-params>`
+        of *spidercls* as `JSON Schema`_.
+
+        .. _JSON Schema: https://json-schema.org/
+        """
+        param_model = _load_param_model(cls)
+        try:
+            param_schema = param_model.model_json_schema()
+        except AttributeError:  # pydantic 1.x
+            param_schema = param_model.schema()
+        # TODO: Consider achieving the same using a custom GenerateJsonSchema
+        # subclass and passing it to `model_json_schema()` above.
+        _post_process_param_schema(param_schema)
+        return param_schema

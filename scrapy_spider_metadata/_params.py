@@ -64,6 +64,7 @@ class Parameterized(Generic[ParamSpecT]):
         param_model = get_generic_param(self.__class__, Parameterized)
         #: :ref:`Spider arguments <spiderargs>` parsed according to the
         #: :ref:`spider parameter specification <define-params>`.
+        assert param_model is not None
         self.args: BaseModel = param_model(**kwargs)
         super().__init__(*args, **kwargs)
 
@@ -75,6 +76,8 @@ class Parameterized(Generic[ParamSpecT]):
         .. _JSON Schema: https://json-schema.org/
         """
         param_model = get_generic_param(cls, Parameterized)
+        assert param_model is not None
+        assert issubclass(param_model, BaseModel)
         try:
             param_schema = param_model.model_json_schema()
         except AttributeError:  # pydantic 1.x

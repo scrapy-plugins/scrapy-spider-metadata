@@ -1,4 +1,5 @@
 from enum import Enum, IntEnum
+from typing import Any, Dict
 
 from packaging import version
 from pydantic import BaseModel, Field, ValidationError
@@ -118,7 +119,7 @@ def test_schema():
         name = "params"
 
     schema = ParamSpider.get_param_schema()
-    expected_schema = {
+    expected_schema: Dict[str, Any] = {
         "properties": {
             "field": {
                 "title": "A Team",

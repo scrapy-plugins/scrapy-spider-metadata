@@ -1,9 +1,9 @@
-from collections.abc import Mapping
 from enum import Enum
-from typing import Any, Dict, Type
+from typing import Any, Dict, Generic, Type, TypeVar
 
-from pydantic import BaseModel
 from scrapy import Spider
+
+from ._utils import get_generic_param
 
 
 def _is_subclass(cls, parent):
@@ -14,19 +14,7 @@ def _is_subclass(cls, parent):
 
 
 def _load_param_model(spidercls, /):
-    meta = getattr(spidercls, "meta", None)
-    if not isinstance(meta, Mapping):
-        return None
-    param_model = meta.get("params", None)
-    if not param_model:
-        return None
-    if not _is_subclass(param_model, BaseModel):
-        spider_import_path = f"{spidercls.__module__}.{spidercls.__qualname__}"
-        raise ValueError(
-            f'{spider_import_path}.meta["params"] is not a subclass of '
-            f"pydantic.BaseModel"
-        )
-    return param_model
+    return get_generic_param(spidercls, Parametrized)
 
 
 def _unwrap_allof(value, defs, /):
@@ -105,7 +93,10 @@ def _parse_spider_kwargs(spider, kwargs, /):
         return parsed_params.dict()
 
 
-class ParamSpiderMixin:
+ParamSpecT = TypeVar("ParamSpecT")
+
+
+class Parametrized(Generic[ParamSpecT]):
     """Validates and type-converts spider arguments according to :ref:`spider
     parameters <define-params>`.
 

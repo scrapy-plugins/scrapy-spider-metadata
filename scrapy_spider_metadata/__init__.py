@@ -1,3 +1,3 @@
 __version__ = "0.0.0"
 
-from ._params import ParamSpiderMixin, get_spider_param_schema
+from ._params import Parametrized, get_spider_param_schema

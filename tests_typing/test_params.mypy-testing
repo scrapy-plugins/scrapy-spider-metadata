@@ -1,0 +1,27 @@
+import pytest
+from pydantic import BaseModel
+from scrapy import Spider
+from scrapy.utils.test import get_crawler
+
+from scrapy_spider_metadata import Args
+
+
+def get_spider(spidercls, settings=None, kwargs=None):
+    crawler = get_crawler(spidercls, settings or {})
+    return crawler._create_spider(spidercls.name, **(kwargs or {}))
+
+
+@pytest.mark.mypy_testing
+def test_paramspect():
+    class Params(BaseModel):
+        foo: int
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    spider = get_spider(ParamSpider, kwargs={"foo": "1"})
+    reveal_type(spider)  # R: ParamSpider
+    reveal_type(spider.args)  # R: Params
+
+# TODO: Test that a ParaSpectT that does not inherit from BaseModel causes a
+# typing error.

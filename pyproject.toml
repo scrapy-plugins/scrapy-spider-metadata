@@ -33,6 +33,9 @@ dynamic = ["version"]
 [project.urls]
 Source = "https://github.com/scrapy-plugins/scrapy-spider-metadata"
 
+[tool.setuptools]
+packages = ["scrapy_spider_metadata"]
+
 [tool.setuptools.dynamic]
 version = {attr = "scrapy_spider_metadata.__version__"}
 
@@ -44,7 +47,7 @@ profile = "black"
 multi_line_output = 3
 
 [tool.mypy]
-check-untyped-defs = true
+check_untyped_defs = true
 
 [[tool.mypy.overrides]]
 module = [

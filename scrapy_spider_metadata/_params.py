@@ -51,7 +51,7 @@ def _post_process_param_schema(param_schema):
         _normalize_enum_meta_keys(value)
 
 
-ParamSpecT = TypeVar("ParamSpecT")
+ParamSpecT = TypeVar("ParamSpecT", bound=BaseModel)
 
 
 class Args(Generic[ParamSpecT]):
@@ -65,7 +65,7 @@ class Args(Generic[ParamSpecT]):
         #: :ref:`Spider arguments <spiderargs>` parsed according to the
         #: :ref:`spider parameter specification <define-params>`.
         assert param_model is not None
-        self.args: BaseModel = param_model(**kwargs)
+        self.args: ParamSpecT = param_model(**kwargs)
         super().__init__(*args, **kwargs)
 
     @classmethod

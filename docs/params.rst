@@ -24,20 +24,20 @@ Defining supported parameters
 
 To define spider parameters, define a subclass of `pydantic.BaseModel`_,
 and then make your spider also inherit from
-:class:`~scrapy_spider_metadata.Parameterized` with your parameter
-specification class as its parameter:
+:class:`~scrapy_spider_metadata.Args` with your parameter specification class
+as its parameter:
 
 .. _pydantic.BaseModel: https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel
 
 .. code-block:: python
 
     from pydantic import BaseModel
-    from scrapy_spider_metadata import Parameterized
+    from scrapy_spider_metadata import Args
 
     class MyParams(BaseModel):
         foo: int
 
-    class MySpider(Parameterized[MyParams], Spider):
+    class MySpider(Args[MyParams], Spider):
         name = "my_spider"
 
 To learn how to define parameters in your `pydantic.BaseModel`_
@@ -85,8 +85,8 @@ Getting the parameter specification as JSON Schema
 
 Given a spider class with :ref:`defined parameters <define-params>`, you can
 get a `JSON Schema`_ representation of the parameter specification of that
-spider using the :func:`~scrapy_spider_metadata.Parameterized.get_param_schema`
-class function:
+spider using the :func:`~scrapy_spider_metadata.Args.get_param_schema` class
+function:
 
 .. _JSON Schema: https://json-schema.org/
 
@@ -109,5 +109,5 @@ moved into the corresponding parameter metadata instead.
 Parameters API
 ==============
 
-.. autoclass:: scrapy_spider_metadata.Parameterized
+.. autoclass:: scrapy_spider_metadata.Args
     :members:

@@ -7,7 +7,7 @@ from pydantic.version import VERSION as PYDANTIC_VERSION
 from pytest import raises
 from scrapy import Spider
 
-from scrapy_spider_metadata import Parameterized
+from scrapy_spider_metadata import Args
 
 from . import get_spider
 
@@ -18,7 +18,7 @@ def test_convert():
     class Params(BaseModel):
         foo: int
 
-    class ParamSpider(Parameterized[Params], Spider):
+    class ParamSpider(Args[Params], Spider):
         name = "params"
 
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
@@ -31,7 +31,7 @@ def test_no_params():
     class Params(BaseModel):
         pass
 
-    class ParamSpider(Parameterized[Params], Spider):
+    class ParamSpider(Args[Params], Spider):
         name = "params"
 
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
@@ -115,7 +115,7 @@ def test_schema():
         )
         # TODO: Cover nullable values.
 
-    class ParamSpider(Parameterized[Params], Spider):
+    class ParamSpider(Args[Params], Spider):
         name = "params"
 
     schema = ParamSpider.get_param_schema()
@@ -196,7 +196,7 @@ def test_validate():
     class Params(BaseModel):
         foo: bool
 
-    class ParamSpider(Parameterized[Params], Spider):
+    class ParamSpider(Args[Params], Spider):
         name = "params"
 
     with raises(ValidationError):

@@ -54,14 +54,14 @@ def _post_process_param_schema(param_schema):
 ParamSpecT = TypeVar("ParamSpecT")
 
 
-class Parameterized(Generic[ParamSpecT]):
+class Args(Generic[ParamSpecT]):
     """Validates and type-converts :ref:`spider arguments <spiderargs>` into
     the :attr:`args` instance attribute according to the :ref:`spider parameter
     specification <define-params>`.
     """
 
     def __init__(self, *args, **kwargs):
-        param_model = get_generic_param(self.__class__, Parameterized)
+        param_model = get_generic_param(self.__class__, Args)
         #: :ref:`Spider arguments <spiderargs>` parsed according to the
         #: :ref:`spider parameter specification <define-params>`.
         assert param_model is not None
@@ -75,7 +75,7 @@ class Parameterized(Generic[ParamSpecT]):
 
         .. _JSON Schema: https://json-schema.org/
         """
-        param_model = get_generic_param(cls, Parameterized)
+        param_model = get_generic_param(cls, Args)
         assert param_model is not None
         assert issubclass(param_model, BaseModel)
         try:

@@ -43,6 +43,9 @@ scrapy_spider_metadata = ["py.typed"]
 profile = "black"
 multi_line_output = 3
 
+[tool.mypy]
+check-untyped-defs = true
+
 [[tool.mypy.overrides]]
 module = [
     "tests.*",

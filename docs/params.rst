@@ -32,13 +32,19 @@ as its parameter:
 .. code-block:: python
 
     from pydantic import BaseModel
+    from scrapy import Request, Spider
     from scrapy_spider_metadata import Args
 
     class MyParams(BaseModel):
-        foo: int
+        pages: int
 
     class MySpider(Args[MyParams], Spider):
         name = "my_spider"
+
+        def start_requests(self):
+            for index in range(1, self.args.pages + 1):
+                yield Request(f"https://books.toscrape.com/catalogue/page-{index}.html")
+
 
 To learn how to define parameters in your `pydantic.BaseModel`_
 subclass, see the `Pydantic usage documentation
@@ -72,12 +78,12 @@ Defined parameters make your spider:
     type.
 
 For example, if you run the spider in the :ref:`example above <define-params>`
-with the ``foo`` parameter set to the string ``"42"``, ``self.args.foo`` is the
-:class:`int` value ``42`` (``self.foo`` remains ``"42"``).
+with the ``pages`` parameter set to the string ``"42"``, ``self.args.pages`` is
+the :class:`int` value ``42`` (``self.pages`` remains ``"42"``).
 
-Also, if you do not pass a value for ``foo`` at all, the spider will not start,
-because ``foo`` is a required parameter. All parameters without a default value
-are considered required parameters.
+Also, if you do not pass a value for ``pages`` at all, the spider will not
+start, because ``pages`` is a required parameter. All parameters without a
+default value are considered required parameters.
 
 
 Getting the parameter specification as JSON Schema
@@ -93,7 +99,7 @@ function:
 .. code-block:: pycon
 
     >>> MySpider.get_param_schema()
-    {'properties': {'foo': {'title': 'Foo', 'type': 'integer'}}, 'required': ['foo'], 'title': 'MyParams', 'type': 'object'}
+    {'properties': {'pages': {'title': 'Pages', 'type': 'integer'}}, 'required': ['pages'], 'title': 'MyParams', 'type': 'object'}
 
 scrapy-spider-metadata uses Pydantic to generate the JSON Schema. However, it
 also applies some post-processing to simplify the resulting schema. For

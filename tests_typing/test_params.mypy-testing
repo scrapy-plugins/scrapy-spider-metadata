@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Type, TypeVar
+from typing import Any, Dict, Optional, Type, TypeVar, cast
 
 import pytest
 from pydantic import BaseModel
@@ -18,7 +18,8 @@ def get_spider(
     kwargs=Optional[Dict[str, Any]]
 ) -> SpiderT:
     crawler = get_crawler(spidercls, settings or {})
-    return crawler._create_spider(spidercls.name, **(kwargs or {}))
+    spider = crawler._create_spider(spidercls.name, **(kwargs or {}))
+    return cast(SpiderT, spider)
 
 
 @pytest.mark.mypy_testing
@@ -30,8 +31,8 @@ def test_paramspect():
         name = "params"
 
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
-    reveal_type(spider)  # R: __main__.ParamSpider@29
-    reveal_type(spider.args)  # R: __main__.Params@26
+    reveal_type(spider)  # R: __main__.ParamSpider@30
+    reveal_type(spider.args)  # R: __main__.Params@27
 
 
 @pytest.mark.mypy_testing

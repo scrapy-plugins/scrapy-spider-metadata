@@ -1,12 +1,22 @@
+from typing import Any, Dict, Optional, Type, TypeVar
+
 import pytest
 from pydantic import BaseModel
 from scrapy import Spider
 from scrapy.utils.test import get_crawler
 
 from scrapy_spider_metadata import Args
+from scrapy_spider_metadata._params import ParamSpecT
 
 
-def get_spider(spidercls, settings=None, kwargs=None):
+SpiderT = TypeVar("SpiderT", bound=Spider)
+
+
+def get_spider(
+    spidercls: Type[SpiderT],
+    settings: Optional[Dict[str, Any]] = None,
+    kwargs=Optional[Dict[str, Any]]
+) -> SpiderT:
     crawler = get_crawler(spidercls, settings or {})
     return crawler._create_spider(spidercls.name, **(kwargs or {}))
 
@@ -20,8 +30,14 @@ def test_paramspect():
         name = "params"
 
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
-    reveal_type(spider)  # R: ParamSpider
-    reveal_type(spider.args)  # R: Params
+    reveal_type(spider)  # R: __main__.ParamSpider@29
+    reveal_type(spider.args)  # R: __main__.Params@26
 
-# TODO: Test that a ParaSpectT that does not inherit from BaseModel causes a
-# typing error.
+
+@pytest.mark.mypy_testing
+def test_paramspect_bad_params():
+    class BadParams:
+        foo: int
+
+    class ParamSpider(Args[BadParams], Spider):  # E: Type argument "BadParams" of "Args" must be a subtype of "BaseModel"
+        name = "params"

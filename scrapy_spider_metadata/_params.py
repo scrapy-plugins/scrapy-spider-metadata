@@ -60,7 +60,7 @@ class Args(Generic[ParamSpecT]):
     specification <define-params>`.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         param_model = get_generic_param(self.__class__, Args)
         #: :ref:`Spider arguments <spiderargs>` parsed according to the
         #: :ref:`spider parameter specification <define-params>`.

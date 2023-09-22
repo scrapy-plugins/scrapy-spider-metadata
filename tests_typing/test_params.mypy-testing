@@ -8,6 +8,8 @@ from scrapy.utils.test import get_crawler
 from scrapy_spider_metadata import Args
 from scrapy_spider_metadata._params import ParamSpecT
 
+from tests.test_params import ParamSpider
+
 
 SpiderT = TypeVar("SpiderT", bound=Spider)
 
@@ -24,15 +26,9 @@ def get_spider(
 
 @pytest.mark.mypy_testing
 def test_paramspect():
-    class Params(BaseModel):
-        foo: int
-
-    class ParamSpider(Args[Params], Spider):
-        name = "params"
-
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
-    reveal_type(spider)  # R: __main__.ParamSpider@30
-    reveal_type(spider.args)  # R: __main__.Params@27
+    reveal_type(spider)  # R: tests.test_params.ParamSpider
+    reveal_type(spider.args)  # R: tests.test_params.Params
 
 
 @pytest.mark.mypy_testing
@@ -40,5 +36,5 @@ def test_paramspect_bad_params():
     class BadParams:
         foo: int
 
-    class ParamSpider(Args[BadParams], Spider):  # E: Type argument "BadParams" of "Args" must be a subtype of "BaseModel"
+    class BadParamSpider(Args[BadParams], Spider):  # E: Type argument "BadParams" of "Args" must be a subtype of "BaseModel"
         name = "params"

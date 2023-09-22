@@ -14,13 +14,15 @@ from . import get_spider
 USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
 
 
+class Params(BaseModel):
+    foo: int
+
+
+class ParamSpider(Args[Params], Spider):
+    name = "params"
+
+
 def test_convert():
-    class Params(BaseModel):
-        foo: int
-
-    class ParamSpider(Args[Params], Spider):
-        name = "params"
-
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
     assert isinstance(spider.args, Params)
     assert spider.args.foo == 1

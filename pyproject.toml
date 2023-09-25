@@ -23,11 +23,18 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+    "packaging>=14.1",
+    "pydantic>=1",
+    "scrapy>=1.0.0",
+]
 dynamic = ["version"]
 
 [project.urls]
 Source = "https://github.com/scrapy-plugins/scrapy-spider-metadata"
+
+[tool.setuptools]
+packages = ["scrapy_spider_metadata"]
 
 [tool.setuptools.dynamic]
 version = {attr = "scrapy_spider_metadata.__version__"}
@@ -39,9 +46,18 @@ scrapy_spider_metadata = ["py.typed"]
 profile = "black"
 multi_line_output = 3
 
+[tool.mypy]
+check_untyped_defs = true
+
 [[tool.mypy.overrides]]
 module = [
     "tests.*",
 ]
 # Allow test functions to be untyped
 disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = [
+    "scrapy.*",
+]
+ignore_missing_imports = true

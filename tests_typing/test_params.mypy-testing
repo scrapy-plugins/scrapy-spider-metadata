@@ -1,0 +1,40 @@
+from typing import Any, Dict, Optional, Type, TypeVar, cast
+
+import pytest
+from pydantic import BaseModel
+from scrapy import Spider
+from scrapy.utils.test import get_crawler
+
+from scrapy_spider_metadata import Args
+from scrapy_spider_metadata._params import ParamSpecT
+
+from tests.test_params import ParamSpider
+
+
+SpiderT = TypeVar("SpiderT", bound=Spider)
+
+
+def get_spider(
+    spidercls: Type[SpiderT],
+    settings: Optional[Dict[str, Any]] = None,
+    kwargs=Optional[Dict[str, Any]]
+) -> SpiderT:
+    crawler = get_crawler(spidercls, settings or {})
+    spider = crawler._create_spider(spidercls.name, **(kwargs or {}))
+    return cast(SpiderT, spider)
+
+
+@pytest.mark.mypy_testing
+def test_paramspect():
+    spider = get_spider(ParamSpider, kwargs={"foo": "1"})
+    reveal_type(spider)  # R: tests.test_params.ParamSpider
+    reveal_type(spider.args)  # R: tests.test_params.Params
+
+
+@pytest.mark.mypy_testing
+def test_paramspect_bad_params():
+    class BadParams:
+        foo: int
+
+    class BadParamSpider(Args[BadParams], Spider):  # E: Type argument "BadParams" of "Args" must be a subtype of "BaseModel"
+        name = "params"

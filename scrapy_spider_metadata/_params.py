@@ -35,6 +35,4 @@ class Args(Generic[ParamSpecT]):
             param_schema = param_model.model_json_schema()
         except AttributeError:  # pydantic 1.x
             param_schema = param_model.schema()
-        # TODO: Consider achieving the same using a custom GenerateJsonSchema
-        # subclass and passing it to `model_json_schema()` above.
         return param_schema

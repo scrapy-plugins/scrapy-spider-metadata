@@ -50,24 +50,6 @@ To learn how to define parameters in your `pydantic.BaseModel`_
 subclass, see the `Pydantic usage documentation
 <https://docs.pydantic.dev/latest/usage/models/>`_.
 
-.. _define-params-limits:
-
-However, scrapy-spider-metadata only supports a subset of Pydantic features:
-
--   Only the following parameter types are supported: :class:`str`,
-    :class:`int`, :class:`float`, :class:`bool`, :class:`~enum.Enum`,
-    :class:`~enum.IntEnum`.
-
--   Defining multiple types for a given parameter is not supported.
-
-Using other Pydantic features can prevent scrapy-spider-metadata from working
-as expected.
-
-.. note:: If you wish to use a Pydantic feature not listed above, please see if
-    it has already been requests in `our issue tracker
-    <https://github.com/scrapy-plugins/scrapy-spider-metadata/issues>`_, and if
-    not, feel free to request it.
-
 Defined parameters make your spider:
 
 -   Halt with an exception if there are missing arguments or any provided
@@ -101,15 +83,8 @@ function:
     >>> MySpider.get_param_schema()
     {'properties': {'pages': {'title': 'Pages', 'type': 'integer'}}, 'required': ['pages'], 'title': 'MyParams', 'type': 'object'}
 
-scrapy-spider-metadata uses Pydantic to generate the JSON Schema. However, it
-also applies some post-processing to simplify the resulting schema. For
-example, the ``$defs`` root key is removed, and :class:`~enum.Enum` metadata is
-moved into the corresponding parameter metadata instead.
-
-.. warning:: If you do not follow the :ref:`scrapy-spider-metadata parameter
-    definition limitations <define-params-limits>`,
-    :func:`~scrapy_spider_metadata.get_spider_param_schema` may return a broken
-    or incomplete schema.
+scrapy-spider-metadata uses Pydantic to generate the JSON Schema, so your
+version of pydantic can affect the resulting output.
 
 
 Parameters API

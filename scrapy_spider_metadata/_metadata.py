@@ -14,10 +14,7 @@ def get_metadata_for_spider(spider_cls: Type[Spider]) -> Dict[str, Any]:
     :return: The complete spider metadata.
     """
     base_metadata = getattr(spider_cls, ATTR_NAME, {})
-    if issubclass(spider_cls, Args):
-        param_schema = spider_cls.get_param_schema()
-    else:
-        param_schema = {}
     result = base_metadata.copy()
-    result["param_schema"] = param_schema
+    if issubclass(spider_cls, Args):
+        result["param_schema"] = spider_cls.get_param_schema()
     return result

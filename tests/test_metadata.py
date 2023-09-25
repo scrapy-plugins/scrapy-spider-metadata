@@ -1,7 +1,14 @@
-from pydantic import BaseModel
 from scrapy import Spider
 
 from scrapy_spider_metadata import Args, get_metadata_for_spider
+from tests.test_params import Params, get_expected_schema
+
+
+def test_metadata_empty():
+    class MySpider(Spider):
+        name = "my_spider"
+
+    assert get_metadata_for_spider(MySpider) == {}
 
 
 def test_metadata_simple():
@@ -15,14 +22,10 @@ def test_metadata_simple():
     assert get_metadata_for_spider(MySpider) == {
         "description": "This is my spider.",
         "category": "My basic spiders",
-        "param_schema": {},
     }
 
 
 def test_metadata_params():
-    class Params(BaseModel):
-        pass
-
     class MySpider(Args[Params], Spider):
         name = "my_spider"
         metadata = {
@@ -33,11 +36,7 @@ def test_metadata_params():
     assert get_metadata_for_spider(MySpider) == {
         "description": "This is my spider.",
         "category": "My basic spiders",
-        "param_schema": {
-            "properties": {},
-            "title": "Params",
-            "type": "object",
-        },
+        "param_schema": get_expected_schema(Params),
     }
 
 
@@ -65,18 +64,15 @@ def test_metadata_inheritance():
     assert get_metadata_for_spider(BaseSpider) == {
         "description": "Base spider.",
         "category": "Base spiders",
-        "param_schema": {},
     }
 
     assert get_metadata_for_spider(BaseNewsSpider) == {
         "description": "Base news spider.",
         "category": "Base spiders",
-        "param_schema": {},
     }
 
     assert get_metadata_for_spider(CNNSpider) == {
         "description": "CNN spider.",
         "category": "Concrete spiders",
         "website": "CNN",
-        "param_schema": {},
     }

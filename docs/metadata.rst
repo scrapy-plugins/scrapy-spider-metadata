@@ -60,5 +60,7 @@ metadata for a specific spider class:
 
 .. autofunction:: scrapy_spider_metadata.get_metadata_for_spider
 
-It returns the ``metadata`` dict with an additional ``param_schema`` key which
-value is the :ref:`JSON Schema for the parameters <params-schema>`.
+It returns a copy of the ``metadata`` dict. If the spider class defines
+:ref:`spider parameters <params>`, the returned dict will have an additional
+``param_schema`` key which value is the :ref:`JSON Schema <params-schema>` for
+the parameters.

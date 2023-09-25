@@ -1,3 +1,5 @@
+.. _params:
+
 ==========
 Parameters
 ==========
@@ -67,6 +69,7 @@ Also, if you do not pass a value for ``pages`` at all, the spider will not
 start, because ``pages`` is a required parameter. All parameters without a
 default value are considered required parameters.
 
+.. _params-schema:
 
 Getting the parameter specification as JSON Schema
 ==================================================

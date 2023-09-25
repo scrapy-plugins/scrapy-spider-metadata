@@ -9,5 +9,6 @@ scrapy-spider-metadata documentation
 .. toctree::
    :maxdepth: 1
 
+   metadata
    params
    changes

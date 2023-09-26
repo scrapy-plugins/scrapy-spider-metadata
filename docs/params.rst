@@ -55,6 +55,10 @@ Defined parameters make your spider:
 -   Halt with an exception if there are missing arguments or any provided
     argument does not match the defined parameter validation rules.
 
+    .. note:: By default extra arguments are silently ignored, but `you can
+        change that
+        <https://docs.pydantic.dev/latest/concepts/models/#extra-fields>`__.
+
 -   Expose an instance of your parameter specification class, that contains the
     parsed version of your spider arguments, e.g. converted to their expected
     type.

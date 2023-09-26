@@ -1,6 +1,6 @@
 from scrapy import Spider
 
-from scrapy_spider_metadata import Args, get_metadata_for_spider
+from scrapy_spider_metadata import Args, get_spider_metadata
 from tests.test_params import Params, get_expected_schema
 
 
@@ -8,7 +8,7 @@ def test_metadata_empty():
     class MySpider(Spider):
         name = "my_spider"
 
-    assert get_metadata_for_spider(MySpider) == {}
+    assert get_spider_metadata(MySpider) == {}
 
 
 def test_metadata_simple():
@@ -19,7 +19,7 @@ def test_metadata_simple():
             "category": "My basic spiders",
         }
 
-    assert get_metadata_for_spider(MySpider) == {
+    assert get_spider_metadata(MySpider) == {
         "description": "This is my spider.",
         "category": "My basic spiders",
     }
@@ -33,7 +33,7 @@ def test_metadata_params():
             "category": "My basic spiders",
         }
 
-    assert get_metadata_for_spider(MySpider) == {
+    assert get_spider_metadata(MySpider) == {
         "description": "This is my spider.",
         "category": "My basic spiders",
         "param_schema": get_expected_schema(Params),
@@ -61,17 +61,17 @@ def test_metadata_inheritance():
             "website": "CNN",
         }
 
-    assert get_metadata_for_spider(BaseSpider) == {
+    assert get_spider_metadata(BaseSpider) == {
         "description": "Base spider.",
         "category": "Base spiders",
     }
 
-    assert get_metadata_for_spider(BaseNewsSpider) == {
+    assert get_spider_metadata(BaseNewsSpider) == {
         "description": "Base news spider.",
         "category": "Base spiders",
     }
 
-    assert get_metadata_for_spider(CNNSpider) == {
+    assert get_spider_metadata(CNNSpider) == {
         "description": "CNN spider.",
         "category": "Concrete spiders",
         "website": "CNN",

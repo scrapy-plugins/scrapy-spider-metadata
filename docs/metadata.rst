@@ -2,13 +2,13 @@
 Spider metadata
 ===============
 
-This library allows retrieving spider metadata defined in the spider classes.
+This library allows retrieving spider metadata defined in spider classes.
 
-If the spider class defines :ref:`spider parameters <params>`, their schema
-will also be included in the retrieved metadata.
+If a spider class defines :ref:`spider parameters <params>`, their schema will
+also be included in the retrieved metadata.
 
-Defining the spider metadata
-============================
+Defining spider metadata
+========================
 
 You can declare arbitrary metadata in your spider classes as a dictionary
 attribute named ``metadata``:
@@ -25,7 +25,7 @@ attribute named ``metadata``:
         }
 
 As this attribute is shared between instances of the class and of its
-subclasses, be careful not to modify it in-place. Here is a simple way to
+subclasses, be careful not to modify it in place. Here is a simple way to
 add or change some values in a subclass:
 
 .. code-block:: python
@@ -52,15 +52,10 @@ add or change some values in a subclass:
             "website": "CNN",
         }
 
-Getting the spider metadata
-===========================
+Getting spider metadata
+=======================
 
 scrapy-spider-metadata provides the following function for retrieving the
 metadata for a specific spider class:
 
-.. autofunction:: scrapy_spider_metadata.get_metadata_for_spider
-
-It returns a copy of the ``metadata`` dict. If the spider class defines
-:ref:`spider parameters <params>`, the returned dict will have an additional
-``param_schema`` key which value is the :ref:`JSON Schema <params-schema>` for
-the parameters.
+.. autofunction:: scrapy_spider_metadata.get_spider_metadata

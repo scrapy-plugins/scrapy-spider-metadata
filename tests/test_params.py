@@ -1,3 +1,5 @@
+from typing import Any, Dict, Type
+
 from packaging import version
 from pydantic import BaseModel, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
@@ -17,6 +19,13 @@ class Params(BaseModel):
 
 class ParamSpider(Args[Params], Spider):
     name = "params"
+
+
+def get_expected_schema(params: Type[BaseModel]) -> Dict[str, Any]:
+    try:
+        return params.model_json_schema()
+    except AttributeError:  # pydantic 1.x
+        return params.schema()
 
 
 def test_convert():
@@ -47,11 +56,7 @@ def test_schema():
         name = "params"
 
     schema = ParamSpider.get_param_schema()
-    try:
-        expected_schema = Params.model_json_schema()
-    except AttributeError:  # pydantic 1.x
-        expected_schema = Params.schema()
-    assert schema == expected_schema
+    assert schema == get_expected_schema(Params)
 
 
 def test_validate():

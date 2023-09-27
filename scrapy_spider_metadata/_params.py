@@ -2,7 +2,7 @@ from typing import Any, Dict, Generic, TypeVar
 
 from pydantic import BaseModel
 
-from ._utils import get_generic_param
+from ._utils import get_generic_param, normalize_param_schema
 
 ParamSpecT = TypeVar("ParamSpecT", bound=BaseModel)
 
@@ -22,11 +22,14 @@ class Args(Generic[ParamSpecT]):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def get_param_schema(cls) -> Dict[Any, Any]:
+    def get_param_schema(cls, normalize=False) -> Dict[Any, Any]:
         """Return a :class:`dict` with the :ref:`parameter definition
         <define-params>` as `JSON Schema`_.
 
         .. _JSON Schema: https://json-schema.org/
+
+        If *normalize* is ``True``, the returned schema will be the same
+        regardless of whether you are using Pydantic 1.x or Pydantic 2.x.
         """
         param_model = get_generic_param(cls, Args)
         assert param_model is not None
@@ -35,4 +38,6 @@ class Args(Generic[ParamSpecT]):
             param_schema = param_model.model_json_schema()
         except AttributeError:  # pydantic 1.x
             param_schema = param_model.schema()
+        if normalize:
+            normalize_param_schema(param_schema)
         return param_schema

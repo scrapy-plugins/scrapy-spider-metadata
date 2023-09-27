@@ -49,6 +49,11 @@ def test_no_params():
         "title": "Params",
         "type": "object",
     }
+    assert ParamSpider.get_param_schema(normalize=True) == {
+        "properties": {},
+        "title": "Params",
+        "type": "object",
+    }
 
 
 PATTERN = r"^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"

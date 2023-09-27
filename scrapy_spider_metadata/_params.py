@@ -29,7 +29,8 @@ class Args(Generic[ParamSpecT]):
         .. _JSON Schema: https://json-schema.org/
 
         If *normalize* is ``True``, the returned schema will be the same
-        regardless of whether you are using Pydantic 1.x or Pydantic 2.x.
+        regardless of whether you are using Pydantic 1.x or Pydantic 2.x. The
+        normalized schema may not match the output of any Pydantic version.
         """
         param_model = get_generic_param(cls, Args)
         assert param_model is not None

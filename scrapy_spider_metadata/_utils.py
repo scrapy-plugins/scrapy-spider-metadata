@@ -29,11 +29,6 @@ def _normalize_param(key, value, defs, /):
     if extra:
         value.update(extra)
 
-    if "enum" in value:
-        default = value.get("default", None)
-        if default is not None:
-            value["default"] = default.value
-
     allof = value.pop("allOf", None)
     if allof is not None:
         for entry in allof:

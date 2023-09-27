@@ -30,7 +30,8 @@ class Args(Generic[ParamSpecT]):
 
         If *normalize* is ``True``, the returned schema will be the same
         regardless of whether you are using Pydantic 1.x or Pydantic 2.x. The
-        normalized schema may not match the output of any Pydantic version.
+        normalized schema may not match the output of any Pydantic version, but
+        it will be functionally equivalent where possible.
         """
         param_model = get_generic_param(cls, Args)
         assert param_model is not None

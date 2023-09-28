@@ -22,7 +22,7 @@ class Args(Generic[ParamSpecT]):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def get_param_schema(cls, normalize=False) -> Dict[Any, Any]:
+    def get_param_schema(cls, normalize: bool = False) -> Dict[Any, Any]:
         """Return a :class:`dict` with the :ref:`parameter definition
         <define-params>` as `JSON Schema`_.
 

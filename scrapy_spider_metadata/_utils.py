@@ -22,3 +22,31 @@ def get_generic_param(
                     return result
             queue.append(base)
     return None
+
+
+def _normalize_param(key, value, defs, /):
+    extra = value.pop("json_schema_extra", None)
+    if extra:
+        value.update(extra)
+
+    allof = value.pop("allOf", None)
+    if allof is not None:
+        for entry in allof:
+            ref = entry.pop("$ref", None)
+            if ref:
+                def_id = ref.rsplit("/", maxsplit=1)[1]
+                entry.update(defs[def_id])
+            entry.pop("title", None)
+            value.update(entry)
+
+    if "title" not in value:
+        value["title"] = key.title().replace("_", " ")
+
+
+def normalize_param_schema(schema, /):
+    params = schema.get("properties", None)
+    if not params:
+        return
+    defs = schema.pop("$defs", None)
+    for key, value in params.items():
+        _normalize_param(key, value, defs)

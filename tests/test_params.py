@@ -8,7 +8,7 @@ from pydantic.version import VERSION as PYDANTIC_VERSION
 from pytest import raises
 from scrapy import Spider
 
-from scrapy_spider_metadata import Args
+from scrapy_spider_metadata import Args, get_spider_metadata
 
 from . import get_spider
 
@@ -394,6 +394,9 @@ def test_schema(normalize, expected_schema):
         name = "params"
 
     schema = ParamSpider.get_param_schema(normalize=normalize)
+    assert schema == expected_schema
+
+    schema = get_spider_metadata(ParamSpider, normalize=normalize)["param_schema"]
     assert schema == expected_schema
 
 

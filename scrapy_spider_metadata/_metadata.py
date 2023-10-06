@@ -7,7 +7,9 @@ from scrapy_spider_metadata._params import Args
 ATTR_NAME = "metadata"
 
 
-def get_spider_metadata(spider_cls: Type[Spider]) -> Dict[str, Any]:
+def get_spider_metadata(
+    spider_cls: Type[Spider], *, normalize: bool = False
+) -> Dict[str, Any]:
     """Return the metadata for the spider class.
 
     Return a copy of the ``metadata`` dict. If the spider class defines
@@ -16,10 +18,11 @@ def get_spider_metadata(spider_cls: Type[Spider]) -> Dict[str, Any]:
     <params-schema>` for the parameters.
 
     :param spider_cls: The spider class.
+    :param normalize: Normalize the returned schema.
     :return: The complete spider metadata.
     """
     base_metadata = getattr(spider_cls, ATTR_NAME, {})
     result = base_metadata.copy()
     if issubclass(spider_cls, Args):
-        result["param_schema"] = spider_cls.get_param_schema()
+        result["param_schema"] = spider_cls.get_param_schema(normalize=normalize)
     return result

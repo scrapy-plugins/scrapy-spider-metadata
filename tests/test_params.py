@@ -1,5 +1,5 @@
 from enum import Enum, IntEnum
-from typing import Any, Dict, Type
+from typing import Any, Dict, Optional, Type
 
 import pytest
 from packaging import version
@@ -96,6 +96,11 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "type": "integer",
                         "default": 1,
                     },
+                    "int_optional": {
+                        "title": "Int Optional",
+                        "anyOf": [{"type": "integer"}, {"type": "null"}],
+                        "default": None,
+                    },
                     "number_without_default": {
                         "title": "Number Without Default",
                         "type": "number",
@@ -171,6 +176,10 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "title": "Int With Default",
                         "type": "integer",
                         "default": 1,
+                    },
+                    "int_optional": {
+                        "title": "Int Optional",
+                        "type": "integer",  # https://github.com/pydantic/pydantic/issues/1270
                     },
                     "number_without_default": {
                         "title": "Number Without Default",
@@ -257,6 +266,16 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "type": "integer",
                         "default": 1,
                     },
+                    "int_optional": {
+                        "title": "Int Optional",
+                        "anyOf": [{"type": "integer"}, {"type": "null"}],
+                        "default": None,
+                    }
+                    if not USING_PYDANTIC_1
+                    else {
+                        "title": "Int Optional",
+                        "type": "integer",
+                    },
                     "number_without_default": {
                         "title": "Number Without Default",
                         "type": "number",
@@ -334,6 +353,10 @@ def test_schema(normalize, expected_schema):
         still = "still"
         sparkling = "sparkling"
 
+    class DessertEnum(str, Enum):
+        cake = "cake"
+        cookie = "cookie"
+
     class Params(BaseModel):
         field: int = Field(
             title="A Team",
@@ -344,6 +367,7 @@ def test_schema(normalize, expected_schema):
             default=0,
         )
         int_with_default: int = 1
+        int_optional: Optional[int] = None
         number_without_default: float
         phone: str = Field(
             min_length=3,
@@ -389,6 +413,7 @@ def test_schema(normalize, expected_schema):
             # https://github.com/pydantic/pydantic/issues/3753#issuecomment-1060850457
             default=...,
         )
+        # dessert_optional: Optional[DessertEnum] = None
 
     class ParamSpider(Args[Params], Spider):
         name = "params"

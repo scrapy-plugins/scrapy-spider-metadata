@@ -256,7 +256,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                     "dessert_required": {
                         "title": "Dessert Required",
                         "enum": ["cake", "cookie"],
-                        "type": "string",  # https://github.com/pydantic/pydantic/issues/1270
+                        "type": "string",
                     },
                 },
                 "required": [

@@ -155,9 +155,9 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "anyOf": [{"$ref": "#/$defs/DessertEnum"}, {"type": "null"}],
                         "default": None,
                     },
-                    # 'dessert_required': {
-                    #     '$ref': '#/$defs/DessertEnum',
-                    # },
+                    "dessert_required": {
+                        "$ref": "#/$defs/DessertEnum",
+                    },
                 },
                 "required": [
                     "number_without_default",
@@ -165,7 +165,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                     "yesno",
                     "fruit",
                     "water",
-                    # "dessert_required",
+                    "dessert_required",
                 ],
                 "title": "Params",
                 "type": "object",
@@ -253,11 +253,11 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "enum": ["cake", "cookie"],
                         "type": "string",  # https://github.com/pydantic/pydantic/issues/1270
                     },
-                    # "dessert_required": {
-                    #     "title": "Dessert Required",
-                    #     "enum": ["cake", "cookie"],
-                    #     "type": "string",  # https://github.com/pydantic/pydantic/issues/1270
-                    # },
+                    "dessert_required": {
+                        "title": "Dessert Required",
+                        "enum": ["cake", "cookie"],
+                        "type": "string",  # https://github.com/pydantic/pydantic/issues/1270
+                    },
                 },
                 "required": [
                     "number_without_default",
@@ -265,7 +265,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                     "yesno",
                     "fruit",
                     "water",
-                    # "dessert_required",
+                    "dessert_required",
                 ],
                 "title": "Params",
                 "type": "object",
@@ -362,11 +362,11 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "enum": ["cake", "cookie"],
                         "type": "string",
                     },
-                    # "dessert_required": {
-                    #     "title": "Dessert Required",
-                    #     "enum": ["cake", "cookie"],
-                    #     "type": "string",
-                    # },
+                    "dessert_required": {
+                        "title": "Dessert Required",
+                        "enum": ["cake", "cookie"],
+                        "type": "string",
+                    },
                 },
                 "required": [
                     "number_without_default",
@@ -374,7 +374,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                     "yesno",
                     "fruit",
                     "water",
-                    # "dessert_required",
+                    "dessert_required",
                 ],
                 "title": "Params",
                 "type": "object",
@@ -456,7 +456,7 @@ def test_schema(normalize, expected_schema):
             default=...,
         )
         dessert_optional: Optional[DessertEnum] = None
-        # dessert_required: DessertEnum
+        dessert_required: DessertEnum
 
     class ParamSpider(Args[Params], Spider):
         name = "params"

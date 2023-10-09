@@ -106,6 +106,10 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "anyOf": [{"type": "integer"}, {"type": "null"}],
                         "default": None,
                     },
+                    "int_optional_without_default": {
+                        "title": "Int Optional Without Default",
+                        "anyOf": [{"type": "integer"}, {"type": "null"}],
+                    },
                     "number_without_default": {
                         "title": "Number Without Default",
                         "type": "number",
@@ -160,6 +164,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                     },
                 },
                 "required": [
+                    "int_optional_without_default",
                     "number_without_default",
                     "phone",
                     "yesno",
@@ -192,6 +197,10 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                     },
                     "int_optional": {
                         "title": "Int Optional",
+                        "type": "integer",  # https://github.com/pydantic/pydantic/issues/1270
+                    },
+                    "int_optional_without_default": {
+                        "title": "Int Optional Without Default",
                         "type": "integer",  # https://github.com/pydantic/pydantic/issues/1270
                     },
                     "number_without_default": {
@@ -300,6 +309,15 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "title": "Int Optional",
                         "type": "integer",
                     },
+                    "int_optional_without_default": {
+                        "title": "Int Optional Without Default",
+                        "anyOf": [{"type": "integer"}, {"type": "null"}],
+                    }
+                    if not USING_PYDANTIC_1
+                    else {
+                        "title": "Int Optional Without Default",
+                        "type": "integer",
+                    },
                     "number_without_default": {
                         "title": "Number Without Default",
                         "type": "number",
@@ -368,7 +386,14 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "type": "string",
                     },
                 },
-                "required": [
+                "required": (
+                    [
+                        "int_optional_without_default",
+                    ]
+                    if not USING_PYDANTIC_1
+                    else []
+                )
+                + [
                     "number_without_default",
                     "phone",
                     "yesno",
@@ -410,6 +435,7 @@ def test_schema(normalize, expected_schema):
         )
         int_with_default: int = 1
         int_optional: Optional[int] = None
+        int_optional_without_default: Optional[int]
         number_without_default: float
         phone: str = Field(
             min_length=3,

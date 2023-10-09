@@ -5,6 +5,9 @@ ignore =
     # line too long
     E501,
 
+    # line break before binary operator
+    W503,
+
     # Missing docstring in public module
     D100,
     # Missing docstring in public class

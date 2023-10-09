@@ -1,3 +1,4 @@
+import copy
 from collections import deque
 from typing import Optional, Tuple, TypeVar, Union, get_args
 
@@ -38,6 +39,25 @@ def _normalize_param(key, value, defs, /):
                 entry.update(defs[def_id])
             entry.pop("title", None)
             value.update(entry)
+
+    anyof = value.get("anyOf")
+    if anyof is not None:
+        for entry in anyof:
+            ref = entry.pop("$ref", None)
+            if not ref:
+                continue
+            def_id = ref.rsplit("/", maxsplit=1)[1]
+            def_copy = copy.copy(defs[def_id])
+            if "type" in def_copy:
+                entry["type"] = def_copy.pop("type")
+            def_copy.pop("title", None)
+            value.update(def_copy)
+
+    ref = value.pop("$ref", None)
+    if ref:
+        def_id = ref.rsplit("/", maxsplit=1)[1]
+        value.update(defs[def_id])
+        value.pop("title", None)
 
     if "title" not in value:
         value["title"] = key.title().replace("_", " ")

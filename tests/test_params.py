@@ -182,6 +182,32 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
         pytest.param(
             False,
             {
+                "definitions": {
+                    "DessertEnum": {
+                        "enum": ["cake", "cookie"],
+                        "title": "DessertEnum",
+                        "description": "An enumeration.",
+                        "type": "string",
+                    },
+                    "FruitEnum": {
+                        "enum": ["pear", "banana"],
+                        "title": "FruitEnum",
+                        "description": "An enumeration.",
+                        "type": "string",
+                    },
+                    "ToolEnum": {
+                        "enum": [1, 2],
+                        "title": "ToolEnum",
+                        "description": "An enumeration.",
+                        "type": "integer",
+                    },
+                    "WaterEnum": {
+                        "enum": ["still", "sparkling"],
+                        "title": "WaterEnum",
+                        "description": "An enumeration.",
+                        "type": "string",
+                    },
+                },
                 "properties": {
                     "field": {
                         "title": "A Team",
@@ -219,8 +245,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "type": "boolean",
                     },
                     "fruit": {
-                        "enum": ["pear", "banana"],
-                        "type": "string",
+                        "allOf": [{"$ref": "#/definitions/FruitEnum"}],
                         "title": "Fruit",
                         "json_schema_extra": {
                             "enumMeta": {
@@ -236,15 +261,11 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         },
                     },
                     "tool": {
-                        "enum": [1, 2],
-                        "title": "Tool",
-                        "type": "integer",
+                        "allOf": [{"$ref": "#/definitions/ToolEnum"}],
                         "default": 2,
                     },
                     "water": {
-                        "enum": ["still", "sparkling"],
-                        "title": "Water",
-                        "type": "string",
+                        "allOf": [{"$ref": "#/definitions/WaterEnum"}],
                         "json_schema_extra": {
                             "enumMeta": {
                                 "still": {
@@ -258,14 +279,10 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         },
                     },
                     "dessert_optional": {
-                        "title": "Dessert Optional",
-                        "enum": ["cake", "cookie"],
-                        "type": "string",  # https://github.com/pydantic/pydantic/issues/1270
+                        "$ref": "#/definitions/DessertEnum",
                     },
                     "dessert_required": {
-                        "title": "Dessert Required",
-                        "enum": ["cake", "cookie"],
-                        "type": "string",
+                        "$ref": "#/definitions/DessertEnum",
                     },
                 },
                 "required": [

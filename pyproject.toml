@@ -25,7 +25,7 @@ classifiers = [
 requires-python = ">=3.8"
 dependencies = [
     "packaging>=14.1",
-    "pydantic>=1",
+    "pydantic>=1.9",
     "scrapy>=1.0.0",
 ]
 dynamic = ["version"]

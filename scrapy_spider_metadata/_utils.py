@@ -1,6 +1,6 @@
 import copy
 from collections import deque
-from typing import Optional, Tuple, TypeVar, Union, get_args
+from typing import Any, Dict, Optional, Tuple, TypeVar, Union, get_args
 
 
 def get_generic_param(
@@ -26,8 +26,13 @@ def get_generic_param(
 
 
 def _normalize_param(key, value, defs, /):
+    def get_def(ref: str) -> Dict[str, Any]:
+        def_id = ref.rsplit("/", maxsplit=1)[1]
+        return defs[def_id]
+
     extra = value.pop("json_schema_extra", None)
     if extra:
+        # pydantic 1.x
         value.update(extra)
 
     allof = value.pop("allOf", None)
@@ -35,9 +40,9 @@ def _normalize_param(key, value, defs, /):
         for entry in allof:
             ref = entry.pop("$ref", None)
             if ref:
-                def_id = ref.rsplit("/", maxsplit=1)[1]
-                entry.update(defs[def_id])
+                entry.update(get_def(ref))
             entry.pop("title", None)
+            entry.pop("description", None)
             value.update(entry)
 
     anyof = value.get("anyOf")
@@ -46,18 +51,18 @@ def _normalize_param(key, value, defs, /):
             ref = entry.pop("$ref", None)
             if not ref:
                 continue
-            def_id = ref.rsplit("/", maxsplit=1)[1]
-            def_copy = copy.copy(defs[def_id])
+            def_copy = copy.copy(get_def(ref))
             if "type" in def_copy:
                 entry["type"] = def_copy.pop("type")
             def_copy.pop("title", None)
+            def_copy.pop("description", None)
             value.update(def_copy)
 
     ref = value.pop("$ref", None)
     if ref:
-        def_id = ref.rsplit("/", maxsplit=1)[1]
-        value.update(defs[def_id])
+        value.update(get_def(ref))
         value.pop("title", None)
+        value.pop("description", None)
 
     if "title" not in value:
         value["title"] = key.title().replace("_", " ")
@@ -68,5 +73,8 @@ def normalize_param_schema(schema, /):
     if not params:
         return
     defs = schema.pop("$defs", None)
+    if not defs:
+        # pydantic 1.x
+        defs = schema.pop("definitions", None)
     for key, value in params.items():
         _normalize_param(key, value, defs)

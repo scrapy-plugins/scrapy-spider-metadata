@@ -1,6 +1,7 @@
 from typing import Any, Dict, Generic, TypeVar
 
 from pydantic import BaseModel
+from pydantic.main import _object_setattr
 
 from ._utils import get_generic_param, normalize_param_schema
 
@@ -15,10 +16,13 @@ class Args(Generic[ParamSpecT]):
 
     def __init__(self, *args, **kwargs) -> None:
         param_model = get_generic_param(self.__class__, Args)
+        assert param_model is not None
         #: :ref:`Spider arguments <spiderargs>` parsed according to the
         #: :ref:`spider parameter specification <define-params>`.
-        assert param_model is not None
         self.args: ParamSpecT = param_model(**kwargs)
+        if hasattr(self.args, "set_args"):
+            for k, v in self.args.set_args().items():
+                _object_setattr(self.args, k, v)
         super().__init__(*args, **kwargs)
 
     @classmethod

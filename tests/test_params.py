@@ -520,3 +520,24 @@ def test_validate():
 
     with raises(ValidationError):
         get_spider(ParamSpider, kwargs={"foo": "2"})
+
+
+def test_spider_subclassing_different_args():
+    class ParentParams(BaseModel):
+        url: str
+
+    class ParentSpider(Args[ParentParams], Spider):
+        name = "parent"
+
+    class ChildParams(BaseModel):
+        max_depth: Optional[int] = None
+
+        def set_args(self):
+            return {"url": "https://toscrape.com"}
+
+    class ChildSpider(ParentSpider, Args[ChildParams]):
+        name = "child"
+
+    spider = get_spider(ChildSpider, kwargs={"max_depth": "1"})
+    assert spider.args.max_depth == 1
+    assert spider.args.url == "https://toscrape.com"

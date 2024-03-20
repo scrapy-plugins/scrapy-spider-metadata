@@ -520,3 +520,25 @@ def test_validate():
 
     with raises(ValidationError):
         get_spider(ParamSpider, kwargs={"foo": "2"})
+
+
+def test_param_hardcoding_in_subclass():
+    """When hard-coding the value of a parameter in a subclass, the default
+    value changes, but the parameter remains.
+    """
+
+    class ParentParams(BaseModel):
+        a: str = Field()
+
+    class Params(ParentParams):
+        a: str = "b"
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    schema = ParamSpider.get_param_schema()
+    assert schema == {
+        "type": "object",
+        "title": "Params",
+        "properties": {"a": {"default": "b", "title": "A", "type": "string"}},
+    }

@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, Type
 
 import pytest
 from packaging import version
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 from pytest import raises
 from scrapy import Spider
@@ -545,6 +545,11 @@ def test_param_hardcoding_in_subclass():
 
 
 def test_subclass_config_extension():
+    try:
+        from pydantic import ConfigDict
+    except ImportError:
+        pytest.skip("No pydantic.ConfigDict")
+
     class ParentParams(BaseModel):
         model_config = ConfigDict(
             json_schema_extra={

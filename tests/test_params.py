@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, Type
 
 import pytest
 from packaging import version
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 from pytest import raises
 from scrapy import Spider
@@ -541,4 +541,36 @@ def test_param_hardcoding_in_subclass():
         "type": "object",
         "title": "Params",
         "properties": {"a": {"default": "b", "title": "A", "type": "string"}},
+    }
+
+
+def test_subclass_config_extension():
+    class ParentParams(BaseModel):
+        model_config = ConfigDict(
+            json_schema_extra={
+                "a": "b",
+            },
+        )
+
+    class Params(ParentParams):
+        model_config = {
+            **ParentParams.model_config,
+            **ConfigDict(
+                json_schema_extra={
+                    **ParentParams.model_config.get("json_schema_extra", {}),
+                    "c": "d",
+                }
+            ),
+        }
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    schema = ParamSpider.get_param_schema()
+    assert schema == {
+        "type": "object",
+        "title": "Params",
+        "properties": {},
+        "a": "b",
+        "c": "d",
     }

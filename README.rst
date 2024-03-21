@@ -27,6 +27,11 @@ scrapy-spider-metadata
 ``scrapy-spider-metadata`` is a Python 3.8+ library of utilities to extend
 Scrapy spiders with usable metadata.
 
+In particular, it provides a nice way for Scrapy spiders to define, validate,
+document and pre-process their arguments as pydantic_ models.
+
+.. _pydantic: https://docs.pydantic.dev/latest/
+
 .. description ends
 
 * Documentation: https://scrapy-spider-metadata.readthedocs.io/en/latest/

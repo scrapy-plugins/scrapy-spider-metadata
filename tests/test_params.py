@@ -520,3 +520,105 @@ def test_validate():
 
     with raises(ValidationError):
         get_spider(ParamSpider, kwargs={"foo": "2"})
+
+
+def test_param_subclass_set_default():
+    class ParentParams(BaseModel):
+        a: str = Field()
+
+    class Params(ParentParams):
+        a: str = "b"
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    schema = ParamSpider.get_param_schema()
+    assert schema == {
+        "type": "object",
+        "title": "Params",
+        "properties": {"a": {"default": "b", "title": "A", "type": "string"}},
+    }
+
+
+def test_param_subclass_unset_default():
+    try:
+        from pydantic.fields import PydanticUndefined
+    except ImportError:
+        pytest.skip("No pydantic.fields.PydanticUndefined")
+
+    class ParentParams(BaseModel):
+        a: str = Field(default="b")
+
+    class Params(ParentParams):
+        a: str = PydanticUndefined  # type: ignore[assignment]
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    schema = ParamSpider.get_param_schema()
+    assert schema == {
+        "type": "object",
+        "title": "Params",
+        "properties": {"a": {"title": "A", "type": "string"}},
+        "required": ["a"],
+    }
+
+
+def test_param_subclass_reword_description():
+    class ParentParams(BaseModel):
+        a: str = Field(description="Parent description")
+
+    class Params(ParentParams):
+        a: str = Field(  # type: ignore[misc]
+            **{**ParentParams.schema()["properties"]["a"], "description": "Description"}
+        )
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    schema = ParamSpider.get_param_schema()
+    assert schema == {
+        "type": "object",
+        "title": "Params",
+        "properties": {
+            "a": {"title": "A", "type": "string", "description": "Description"}
+        },
+        "required": ["a"],
+    }
+
+
+def test_subclass_config_extension():
+    try:
+        from pydantic import ConfigDict
+    except ImportError:
+        pytest.skip("No pydantic.ConfigDict")
+
+    class ParentParams(BaseModel):
+        model_config = ConfigDict(
+            json_schema_extra={
+                "a": "b",
+            },
+        )
+
+    class Params(ParentParams):
+        model_config = {
+            **ParentParams.model_config,
+            **ConfigDict(
+                json_schema_extra={
+                    **ParentParams.model_config.get("json_schema_extra", {}),
+                    "c": "d",
+                }
+            ),
+        }
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    schema = ParamSpider.get_param_schema()
+    assert schema == {
+        "type": "object",
+        "title": "Params",
+        "properties": {},
+        "a": "b",
+        "c": "d",
+    }

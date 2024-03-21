@@ -522,11 +522,7 @@ def test_validate():
         get_spider(ParamSpider, kwargs={"foo": "2"})
 
 
-def test_param_hardcoding_in_subclass():
-    """When hard-coding the value of a parameter in a subclass, the default
-    value changes, but the parameter remains.
-    """
-
+def test_param_subclass_set_default():
     class ParentParams(BaseModel):
         a: str = Field()
 
@@ -541,6 +537,53 @@ def test_param_hardcoding_in_subclass():
         "type": "object",
         "title": "Params",
         "properties": {"a": {"default": "b", "title": "A", "type": "string"}},
+    }
+
+
+def test_param_subclass_unset_default():
+    try:
+        from pydantic.fields import PydanticUndefined
+    except ImportError:
+        pytest.skip("No pydantic.fields.PydanticUndefined")
+
+    class ParentParams(BaseModel):
+        a: str = Field(default="b")
+
+    class Params(ParentParams):
+        a: str = PydanticUndefined  # type: ignore[assignment]
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    schema = ParamSpider.get_param_schema()
+    assert schema == {
+        "type": "object",
+        "title": "Params",
+        "properties": {"a": {"title": "A", "type": "string"}},
+        "required": ["a"],
+    }
+
+
+def test_param_subclass_reword_description():
+    class ParentParams(BaseModel):
+        a: str = Field(description="Parent description")
+
+    class Params(ParentParams):
+        a: str = Field(  # type: ignore[misc]
+            **{**ParentParams.schema()["properties"]["a"], "description": "Description"}
+        )
+
+    class ParamSpider(Args[Params], Spider):
+        name = "params"
+
+    schema = ParamSpider.get_param_schema()
+    assert schema == {
+        "type": "object",
+        "title": "Params",
+        "properties": {
+            "a": {"title": "A", "type": "string", "description": "Description"}
+        },
+        "required": ["a"],
     }
 
 

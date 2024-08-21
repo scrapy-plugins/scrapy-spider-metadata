@@ -1,10 +1,12 @@
+from logging import getLogger
 from typing import Any, Dict, Generic, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from ._utils import get_generic_param, normalize_param_schema
 
 ParamSpecT = TypeVar("ParamSpecT", bound=BaseModel)
+logger = getLogger(__name__)
 
 
 class Args(Generic[ParamSpecT]):
@@ -18,7 +20,14 @@ class Args(Generic[ParamSpecT]):
         #: :ref:`Spider arguments <spiderargs>` parsed according to the
         #: :ref:`spider parameter specification <define-params>`.
         assert param_model is not None
-        self.args: ParamSpecT = param_model(**kwargs)
+        try:
+            self.args: ParamSpecT = param_model(**kwargs)
+        except ValidationError as e:
+            # Log the message explicitly, when using the “scrapy crawl” command
+            # the exception seems to be silenced somehow instead of showing up
+            # in the command output otherwise.
+            logger.error(f"Spider parameter validation failed: {e}")
+            raise
         super().__init__(*args, **kwargs)
 
     @classmethod

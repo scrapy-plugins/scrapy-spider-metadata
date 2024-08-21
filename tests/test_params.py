@@ -511,15 +511,17 @@ def test_schema(normalize, expected_schema):
     assert schema == expected_schema
 
 
-def test_validate():
+def test_validate(caplog):
     class Params(BaseModel):
         foo: bool
 
     class ParamSpider(Args[Params], Spider):
         name = "params"
 
+    caplog.clear()
     with raises(ValidationError):
         get_spider(ParamSpider, kwargs={"foo": "2"})
+    assert "Spider parameter validation failed:" in caplog.text
 
 
 def test_param_subclass_set_default():

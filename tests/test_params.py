@@ -126,7 +126,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "type": "boolean",
                     },
                     "fruit": {
-                        "allOf": [{"$ref": "#/$defs/FruitEnum"}],
+                        "$ref": "#/$defs/FruitEnum",
                         "title": "Fruit",
                         "enumMeta": {
                             "pear": {
@@ -140,11 +140,11 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         },
                     },
                     "tool": {
-                        "allOf": [{"$ref": "#/$defs/ToolEnum"}],
+                        "$ref": "#/$defs/ToolEnum",
                         "default": 2,
                     },
                     "water": {
-                        "allOf": [{"$ref": "#/$defs/WaterEnum"}],
+                        "$ref": "#/$defs/WaterEnum",
                         "enumMeta": {
                             "still": {
                                 "title": "Still water",

@@ -60,9 +60,10 @@ def _normalize_param(key, value, defs, /):
 
     ref = value.pop("$ref", None)
     if ref:
-        value.update(get_def(ref))
-        value.pop("title", None)
-        value.pop("description", None)
+        def_copy = copy.copy(get_def(ref))
+        def_copy.pop("title", None)
+        def_copy.pop("description", None)
+        value.update(def_copy)
 
     if "title" not in value:
         value["title"] = key.title().replace("_", " ")

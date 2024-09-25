@@ -127,7 +127,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                     },
                     "fruit": {
                         "$ref": "#/$defs/FruitEnum",
-                        "title": "Fruit",
+                        "title": "Fruit name",
                         "enumMeta": {
                             "pear": {
                                 "title": "Pear",
@@ -246,7 +246,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                     },
                     "fruit": {
                         "allOf": [{"$ref": "#/definitions/FruitEnum"}],
-                        "title": "Fruit",
+                        "title": "Fruit name",
                         "json_schema_extra": {
                             "enumMeta": {
                                 "pear": {
@@ -351,7 +351,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "type": "boolean",
                     },
                     "fruit": {
-                        "title": "Fruit",
+                        "title": "Fruit name",
                         "type": "string",
                         "enum": ["pear", "banana"],
                         "enumMeta": {
@@ -464,7 +464,7 @@ def test_schema(normalize, expected_schema):
         )
         yesno: bool
         fruit: FruitEnum = Field(
-            title="Fruit",
+            title="Fruit name",
             json_schema_extra={
                 "enumMeta": {
                     FruitEnum.pear: {

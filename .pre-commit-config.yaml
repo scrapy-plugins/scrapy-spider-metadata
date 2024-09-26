@@ -4,11 +4,11 @@ repos:
   - hooks:
       - id: black
     repo: https://github.com/ambv/black
-    rev: 23.9.1
+    rev: 24.8.0
   - hooks:
       - id: isort
     repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 5.13.2
   - hooks:
       - id: flake8
         additional_dependencies:
@@ -18,4 +18,4 @@ repos:
           - flake8-docstrings
           - flake8-string-format
     repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
+    rev: 7.1.1

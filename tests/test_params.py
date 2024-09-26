@@ -1,5 +1,5 @@
 from enum import Enum, IntEnum
-from typing import Any, Dict, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, cast
 
 import pytest
 from packaging import version
@@ -11,6 +11,9 @@ from scrapy import Spider
 from scrapy_spider_metadata import Args, get_spider_metadata
 
 from . import get_spider
+
+if TYPE_CHECKING:
+    from pydantic.config import JsonDict
 
 
 class Params(BaseModel):
@@ -316,25 +319,29 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                         "type": "integer",
                         "default": 1,
                     },
-                    "int_optional": {
-                        "title": "Int Optional",
-                        "anyOf": [{"type": "integer"}, {"type": "null"}],
-                        "default": None,
-                    }
-                    if not USING_PYDANTIC_1
-                    else {
-                        "title": "Int Optional",
-                        "type": "integer",
-                    },
-                    "int_optional_without_default": {
-                        "title": "Int Optional Without Default",
-                        "anyOf": [{"type": "integer"}, {"type": "null"}],
-                    }
-                    if not USING_PYDANTIC_1
-                    else {
-                        "title": "Int Optional Without Default",
-                        "type": "integer",
-                    },
+                    "int_optional": (
+                        {
+                            "title": "Int Optional",
+                            "anyOf": [{"type": "integer"}, {"type": "null"}],
+                            "default": None,
+                        }
+                        if not USING_PYDANTIC_1
+                        else {
+                            "title": "Int Optional",
+                            "type": "integer",
+                        }
+                    ),
+                    "int_optional_without_default": (
+                        {
+                            "title": "Int Optional Without Default",
+                            "anyOf": [{"type": "integer"}, {"type": "null"}],
+                        }
+                        if not USING_PYDANTIC_1
+                        else {
+                            "title": "Int Optional Without Default",
+                            "type": "integer",
+                        }
+                    ),
                     "number_without_default": {
                         "title": "Number Without Default",
                         "type": "number",
@@ -385,18 +392,20 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                             },
                         },
                     },
-                    "dessert_optional": {
-                        "title": "Dessert Optional",
-                        "enum": ["cake", "cookie"],
-                        "anyOf": [{"type": "string"}, {"type": "null"}],
-                        "default": None,
-                    }
-                    if not USING_PYDANTIC_1
-                    else {
-                        "title": "Dessert Optional",
-                        "enum": ["cake", "cookie"],
-                        "type": "string",
-                    },
+                    "dessert_optional": (
+                        {
+                            "title": "Dessert Optional",
+                            "enum": ["cake", "cookie"],
+                            "anyOf": [{"type": "string"}, {"type": "null"}],
+                            "default": None,
+                        }
+                        if not USING_PYDANTIC_1
+                        else {
+                            "title": "Dessert Optional",
+                            "enum": ["cake", "cookie"],
+                            "type": "string",
+                        }
+                    ),
                     "dessert_required": {
                         "title": "Dessert Required",
                         "enum": ["cake", "cookie"],
@@ -607,7 +616,10 @@ def test_subclass_config_extension():
             **ParentParams.model_config,
             **ConfigDict(
                 json_schema_extra={
-                    **ParentParams.model_config.get("json_schema_extra", {}),
+                    **cast(
+                        "JsonDict",
+                        ParentParams.model_config.get("json_schema_extra", {}),
+                    ),
                     "c": "d",
                 }
             ),

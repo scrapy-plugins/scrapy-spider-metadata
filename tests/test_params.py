@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 from enum import Enum, IntEnum
-from typing import Any, Dict, Optional, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, cast
 
 import pytest
 from packaging import version
 from pydantic import BaseModel, Field, ValidationError
-from pydantic.config import JsonDict
 from pydantic.version import VERSION as PYDANTIC_VERSION
 from pytest import raises
 from scrapy import Spider
@@ -12,6 +13,9 @@ from scrapy import Spider
 from scrapy_spider_metadata import Args, get_spider_metadata
 
 from . import get_spider
+
+if TYPE_CHECKING:
+    from pydantic.config import JsonDict
 
 
 class Params(BaseModel):
@@ -615,7 +619,8 @@ def test_subclass_config_extension():
             **ConfigDict(
                 json_schema_extra={
                     **cast(
-                        JsonDict, ParentParams.model_config.get("json_schema_extra", {})
+                        "JsonDict",
+                        ParentParams.model_config.get("json_schema_extra", {}),
                     ),
                     "c": "d",
                 }

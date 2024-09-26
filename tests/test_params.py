@@ -610,12 +610,13 @@ def test_subclass_config_extension():
         )
 
     class Params(ParentParams):
-        parent = cast(JsonDict, ParentParams.model_config.get("json_schema_extra", {}))
         model_config = {
             **ParentParams.model_config,
             **ConfigDict(
                 json_schema_extra={
-                    **parent,
+                    **cast(
+                        JsonDict, ParentParams.model_config.get("json_schema_extra", {})
+                    ),
                     "c": "d",
                 }
             ),

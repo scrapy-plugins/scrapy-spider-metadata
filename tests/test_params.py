@@ -61,11 +61,13 @@ def test_no_params():
 
 PATTERN = r"^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
 USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
+USING_PYDANTIC_29 = version.parse(str(PYDANTIC_VERSION)) >= version.parse("2.9")
 
 
 @pytest.mark.parametrize(
     "normalize,expected_schema",
     [
+        # Expectations for Pydantic 2.9+
         pytest.param(
             False,
             {
@@ -179,9 +181,128 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                 "type": "object",
             },
             marks=pytest.mark.skipif(
-                USING_PYDANTIC_1, reason="Expectations for Pydantic 2.x"
+                not USING_PYDANTIC_29, reason="Expectations for Pydantic 2.9+"
             ),
         ),
+        # Expectations for Pydantic 2.0-2.8
+        pytest.param(
+            False,
+            {
+                "$defs": {
+                    "DessertEnum": {
+                        "enum": ["cake", "cookie"],
+                        "title": "DessertEnum",
+                        "type": "string",
+                    },
+                    "FruitEnum": {
+                        "enum": ["pear", "banana"],
+                        "title": "FruitEnum",
+                        "type": "string",
+                    },
+                    "ToolEnum": {
+                        "enum": [1, 2],
+                        "title": "ToolEnum",
+                        "type": "integer",
+                    },
+                    "WaterEnum": {
+                        "enum": ["still", "sparkling"],
+                        "title": "WaterEnum",
+                        "type": "string",
+                    },
+                },
+                "properties": {
+                    "field": {
+                        "title": "A Team",
+                        "description": "This is a description of the A team.",
+                        "type": "integer",
+                        "foo": "bar",
+                        "default": 0,
+                    },
+                    "int_with_default": {
+                        "title": "Int With Default",
+                        "type": "integer",
+                        "default": 1,
+                    },
+                    "int_optional": {
+                        "title": "Int Optional",
+                        "anyOf": [{"type": "integer"}, {"type": "null"}],
+                        "default": None,
+                    },
+                    "int_optional_without_default": {
+                        "title": "Int Optional Without Default",
+                        "anyOf": [{"type": "integer"}, {"type": "null"}],
+                    },
+                    "number_without_default": {
+                        "title": "Number Without Default",
+                        "type": "number",
+                    },
+                    "phone": {
+                        "title": "Phone",
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 100,
+                        "pattern": PATTERN,
+                    },
+                    "yesno": {
+                        "title": "Yesno",
+                        "type": "boolean",
+                    },
+                    "fruit": {
+                        "allOf": [{"$ref": "#/$defs/FruitEnum"}],
+                        "title": "Fruit name",
+                        "enumMeta": {
+                            "pear": {
+                                "title": "Pear",
+                                "description": "Pyrus fruit",
+                            },
+                            "banana": {
+                                "title": "Banana",
+                                "description": "Love fruit",
+                            },
+                        },
+                    },
+                    "tool": {
+                        "allOf": [{"$ref": "#/$defs/ToolEnum"}],
+                        "default": 2,
+                    },
+                    "water": {
+                        "allOf": [{"$ref": "#/$defs/WaterEnum"}],
+                        "enumMeta": {
+                            "still": {
+                                "title": "Still water",
+                            },
+                            "sparkling": {
+                                "title": "Sparkling water",
+                                "video": "https://www.youtube.com/clip/UgkxxervFpv38ILyF_cZeHuat3sVNwmCy8pF",
+                            },
+                        },
+                    },
+                    "dessert_optional": {
+                        "anyOf": [{"$ref": "#/$defs/DessertEnum"}, {"type": "null"}],
+                        "default": None,
+                    },
+                    "dessert_required": {
+                        "$ref": "#/$defs/DessertEnum",
+                    },
+                },
+                "required": [
+                    "int_optional_without_default",
+                    "number_without_default",
+                    "phone",
+                    "yesno",
+                    "fruit",
+                    "water",
+                    "dessert_required",
+                ],
+                "title": "Params",
+                "type": "object",
+            },
+            marks=pytest.mark.skipif(
+                USING_PYDANTIC_1 or USING_PYDANTIC_29,
+                reason="Expectations for Pydantic 2.0-2.8",
+            ),
+        ),
+        # Expectations for Pydantic 1.x
         pytest.param(
             False,
             {
@@ -303,6 +424,7 @@ USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
                 not USING_PYDANTIC_1, reason="Expectations for Pydantic 1.x"
             ),
         ),
+        # Normalized
         (
             True,
             {
@@ -598,11 +720,9 @@ def test_param_subclass_reword_description():
     }
 
 
+@pytest.mark.skipif(USING_PYDANTIC_1, reason="Requires Pydantic 2.x")
 def test_subclass_config_extension():
-    try:
-        from pydantic import ConfigDict
-    except ImportError:
-        pytest.skip("No pydantic.ConfigDict")
+    from pydantic import ConfigDict
 
     class ParentParams(BaseModel):
         model_config = ConfigDict(

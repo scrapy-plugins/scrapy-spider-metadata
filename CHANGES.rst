@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.2.0 (YYYY-MM-DD)
+0.2.0 (2024-09-26)
 ==================
 
 * Added support for newer Pydantic 1.x versions and dropped support for older

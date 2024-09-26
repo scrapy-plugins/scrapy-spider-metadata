@@ -720,11 +720,9 @@ def test_param_subclass_reword_description():
     }
 
 
+@pytest.mark.skipif(USING_PYDANTIC_1, reason="Requires Pydantic 2.x")
 def test_subclass_config_extension():
-    try:
-        from pydantic import ConfigDict
-    except ImportError:
-        pytest.skip("No pydantic.ConfigDict")
+    from pydantic import ConfigDict
 
     class ParentParams(BaseModel):
         model_config = ConfigDict(

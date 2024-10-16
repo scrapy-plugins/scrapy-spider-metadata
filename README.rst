@@ -24,7 +24,7 @@ scrapy-spider-metadata
 
 .. description starts
 
-``scrapy-spider-metadata`` is a Python 3.8+ library of utilities to extend
+``scrapy-spider-metadata`` is a Python 3.9+ library of utilities to extend
 Scrapy spiders with usable metadata.
 
 In particular, it provides a nice way for Scrapy spiders to define, validate,

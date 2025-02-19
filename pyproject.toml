@@ -43,6 +43,17 @@ version = {attr = "scrapy_spider_metadata.__version__"}
 [tool.setuptools.package-data]
 scrapy_spider_metadata = ["py.typed"]
 
+[tool.bumpversion]
+current_version = "0.2.0"
+commit = true
+tag = true
+tag_name = "{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "scrapy_spider_metadata/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
 [tool.mypy]
 check_untyped_defs = true
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type
+from typing import Any
 
 from scrapy import Spider
 
@@ -8,8 +8,8 @@ ATTR_NAME = "metadata"
 
 
 def get_spider_metadata(
-    spider_cls: Type[Spider], *, normalize: bool = False
-) -> Dict[str, Any]:
+    spider_cls: type[Spider], *, normalize: bool = False
+) -> dict[str, Any]:
     """Return the metadata for the spider class.
 
     Return a copy of the ``metadata`` dict. If the spider class defines

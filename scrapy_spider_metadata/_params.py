@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Dict, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
@@ -15,7 +15,7 @@ class Args(Generic[ParamSpecT]):
     specification <define-params>`.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any):
         param_model = get_generic_param(self.__class__, Args)
         #: :ref:`Spider arguments <spiderargs>` parsed according to the
         #: :ref:`spider parameter specification <define-params>`.
@@ -31,7 +31,7 @@ class Args(Generic[ParamSpecT]):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def get_param_schema(cls, normalize: bool = False) -> Dict[Any, Any]:
+    def get_param_schema(cls, normalize: bool = False) -> dict[Any, Any]:
         """Return a :class:`dict` with the :ref:`parameter definition
         <define-params>` as `JSON Schema`_.
 

@@ -1,11 +1,10 @@
 from enum import Enum, IntEnum
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 import pytest
 from packaging import version
 from pydantic import BaseModel, Field, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
-from pytest import raises
 from scrapy import Spider
 
 from scrapy_spider_metadata import Args, get_spider_metadata
@@ -24,7 +23,7 @@ class ParamSpider(Args[Params], Spider):
     name = "params"
 
 
-def get_expected_schema(params: Type[BaseModel]) -> Dict[str, Any]:
+def get_expected_schema(params: type[BaseModel]) -> dict[str, Any]:
     try:
         return params.model_json_schema()
     except AttributeError:  # pydantic 1.x
@@ -35,7 +34,7 @@ def test_convert():
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
     assert isinstance(spider.args, Params)
     assert spider.args.foo == 1
-    assert spider.foo == "1"
+    assert spider.foo == "1"  # type: ignore[attr-defined]
 
 
 def test_no_params():
@@ -65,7 +64,7 @@ USING_PYDANTIC_29 = version.parse(str(PYDANTIC_VERSION)) >= version.parse("2.9")
 
 
 @pytest.mark.parametrize(
-    "normalize,expected_schema",
+    ("normalize", "expected_schema"),
     [
         # Expectations for Pydantic 2.9+
         pytest.param(
@@ -650,7 +649,7 @@ def test_validate(caplog):
         name = "params"
 
     caplog.clear()
-    with raises(ValidationError):
+    with pytest.raises(ValidationError):
         get_spider(ParamSpider, kwargs={"foo": "2"})
     assert "Spider parameter validation failed:" in caplog.text
 
@@ -675,7 +674,7 @@ def test_param_subclass_set_default():
 
 def test_param_subclass_unset_default():
     try:
-        from pydantic.fields import PydanticUndefined
+        from pydantic.fields import PydanticUndefined  # type: ignore[attr-defined]
     except ImportError:
         pytest.skip("No pydantic.fields.PydanticUndefined")
 

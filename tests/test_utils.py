@@ -31,11 +31,11 @@ class BaseSpecialized(MyGeneric[Item]):
     pass
 
 
-class BaseAny(MyGeneric):
+class BaseAny(MyGeneric):  # type: ignore[type-arg]
     pass
 
 
-class Derived(Base):
+class Derived(Base):  # type: ignore[type-arg]
     pass
 
 
@@ -56,7 +56,7 @@ class SpecializedTwoGenerics(MyGeneric2[Item2], BaseSpecialized):
 
 
 @pytest.mark.parametrize(
-    ["cls", "param"],
+    ("cls", "param"),
     [
         (MyGeneric, None),
         (Base, None),
@@ -69,5 +69,5 @@ class SpecializedTwoGenerics(MyGeneric2[Item2], BaseSpecialized):
         (SpecializedTwoGenerics, Item),
     ],
 )
-def test_get_generic_param(cls, param) -> None:
+def test_get_generic_param(cls: type, param: type) -> None:
     assert get_generic_param(cls, expected=MyGeneric) == param

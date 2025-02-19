@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from collections import deque
-from typing import Any, TypeVar, get_args
+from typing import Any, TypeVar, cast, get_args
 
 
 def get_generic_param(cls: type, expected: type | tuple[type, ...]) -> type | None:
@@ -20,15 +20,15 @@ def get_generic_param(cls: type, expected: type | tuple[type, ...]) -> type | No
             if origin and issubclass(origin, expected):
                 result = get_args(base)[0]
                 if not isinstance(result, TypeVar):
-                    return result
+                    return cast(type, result)
             queue.append(base)
     return None
 
 
-def _normalize_param(key, value, defs, /):
+def _normalize_param(key: str, value: dict[str, Any], defs: dict[str, Any], /) -> None:
     def get_def(ref: str) -> dict[str, Any]:
         def_id = ref.rsplit("/", maxsplit=1)[1]
-        return defs[def_id]
+        return cast(dict[str, Any], defs[def_id])
 
     extra = value.pop("json_schema_extra", None)
     if extra:
@@ -69,8 +69,8 @@ def _normalize_param(key, value, defs, /):
         value["title"] = key.title().replace("_", " ")
 
 
-def normalize_param_schema(schema, /):
-    params = schema.get("properties", None)
+def normalize_param_schema(schema: dict[str, Any], /) -> None:
+    params = schema.get("properties")
     if not params:
         return
     defs = schema.pop("$defs", None)

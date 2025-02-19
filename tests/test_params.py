@@ -34,7 +34,7 @@ def test_convert():
     spider = get_spider(ParamSpider, kwargs={"foo": "1"})
     assert isinstance(spider.args, Params)
     assert spider.args.foo == 1
-    assert spider.foo == "1"
+    assert spider.foo == "1"  # type: ignore[attr-defined]
 
 
 def test_no_params():
@@ -674,7 +674,7 @@ def test_param_subclass_set_default():
 
 def test_param_subclass_unset_default():
     try:
-        from pydantic.fields import PydanticUndefined
+        from pydantic.fields import PydanticUndefined  # type: ignore[attr-defined]
     except ImportError:
         pytest.skip("No pydantic.fields.PydanticUndefined")
 

@@ -62,13 +62,7 @@ module = [
     "tests.*",
 ]
 # Allow test functions to be untyped
-disallow_untyped_defs = false
-
-[[tool.mypy.overrides]]
-module = [
-    "scrapy.*",
-]
-ignore_missing_imports = true
+allow_untyped_defs = true
 
 [tool.ruff.lint]
 extend-select = [
@@ -184,7 +178,6 @@ ignore = [
 runtime-evaluated-base-classes = ["pydantic.BaseModel"]
 
 [tool.ruff.lint.per-file-ignores]
-"scrapy_spider_metadata/__init__.py" = ["F401", "F403"]
 # `from __future__ import annotations` breaks Pydantic 1.x
 "tests/test_params.py" = ["FA100"]
 

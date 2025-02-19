@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Dict, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
@@ -31,7 +31,7 @@ class Args(Generic[ParamSpecT]):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def get_param_schema(cls, normalize: bool = False) -> Dict[Any, Any]:
+    def get_param_schema(cls, normalize: bool = False) -> dict[Any, Any]:
         """Return a :class:`dict` with the :ref:`parameter definition
         <define-params>` as `JSON Schema`_.
 

@@ -56,7 +56,7 @@ class SpecializedTwoGenerics(MyGeneric2[Item2], BaseSpecialized):
 
 
 @pytest.mark.parametrize(
-    ["cls", "param"],
+    ("cls", "param"),
     [
         (MyGeneric, None),
         (Base, None),

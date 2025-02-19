@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 import copy
 from collections import deque
-from typing import Any, Dict, Optional, Tuple, TypeVar, Union, get_args
+from typing import Any, TypeVar, get_args
 
 
-def get_generic_param(
-    cls: type, expected: Union[type, Tuple[type, ...]]
-) -> Optional[type]:
+def get_generic_param(cls: type, expected: type | tuple[type, ...]) -> type | None:
     """Search the base classes recursively breadth-first for a generic class and return its param.
 
     Returns the param of the first found class that is a subclass of ``expected``.
@@ -26,7 +26,7 @@ def get_generic_param(
 
 
 def _normalize_param(key, value, defs, /):
-    def get_def(ref: str) -> Dict[str, Any]:
+    def get_def(ref: str) -> dict[str, Any]:
         def_id = ref.rsplit("/", maxsplit=1)[1]
         return defs[def_id]
 

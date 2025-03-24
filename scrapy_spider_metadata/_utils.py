@@ -20,7 +20,7 @@ def get_generic_param(cls: type, expected: type | tuple[type, ...]) -> type | No
             if origin and issubclass(origin, expected):
                 result = get_args(base)[0]
                 if not isinstance(result, TypeVar):
-                    return cast(type, result)
+                    return cast("type", result)
             queue.append(base)
     return None
 
@@ -28,7 +28,7 @@ def get_generic_param(cls: type, expected: type | tuple[type, ...]) -> type | No
 def _normalize_param(key: str, value: dict[str, Any], defs: dict[str, Any], /) -> None:
     def get_def(ref: str) -> dict[str, Any]:
         def_id = ref.rsplit("/", maxsplit=1)[1]
-        return cast(dict[str, Any], defs[def_id])
+        return cast("dict[str, Any]", defs[def_id])
 
     extra = value.pop("json_schema_extra", None)
     if extra:

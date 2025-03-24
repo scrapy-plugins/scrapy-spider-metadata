@@ -54,8 +54,13 @@ filename = "scrapy_spider_metadata/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
-[tool.mypy]
-check_untyped_defs = true
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+]
 
 [[tool.mypy.overrides]]
 module = [
@@ -63,6 +68,7 @@ module = [
 ]
 # Allow test functions to be untyped
 allow_untyped_defs = true
+check_untyped_defs = true
 
 [tool.ruff.lint]
 extend-select = [

@@ -14,4 +14,4 @@ def get_spider(
     kwargs: dict[str, Any] | None = None,
 ) -> _SpiderT:
     crawler = get_crawler(spidercls, settings or {})
-    return cast(_SpiderT, crawler._create_spider(spidercls.name, **(kwargs or {})))
+    return cast("_SpiderT", crawler._create_spider(spidercls.name, **(kwargs or {})))

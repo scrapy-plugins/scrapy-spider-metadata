@@ -189,3 +189,6 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "pep257"
+
+[tool.sphinx-scrapy]
+python-version = "3.13"

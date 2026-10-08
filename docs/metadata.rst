@@ -17,6 +17,7 @@ attribute named ``metadata``:
 
     from scrapy import Spider
 
+
     class MySpider(Spider):
         name = "my_spider"
         metadata = {
@@ -32,17 +33,20 @@ add or change some values in a subclass:
 
     from scrapy import Spider
 
+
     class BaseSpider(Spider):
         metadata = {
             "description": "Base spider.",
             "category": "Base spiders",
         }
 
+
     class BaseNewsSpider(BaseSpider):
         metadata = {
             **BaseSpider.metadata,
             "description": "Base news spider.",
         }
+
 
     class CNNSpider(BaseNewsSpider):
         metadata = {

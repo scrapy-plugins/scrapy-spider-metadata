@@ -1,5 +1,5 @@
 from enum import Enum, IntEnum
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 from packaging import version
@@ -581,8 +581,8 @@ def test_schema(normalize, expected_schema):
             default=0,
         )
         int_with_default: int = 1
-        int_optional: Optional[int] = None
-        int_optional_without_default: Optional[int]
+        int_optional: int | None = None
+        int_optional_without_default: int | None
         number_without_default: float
         phone: str = Field(
             min_length=3,
@@ -628,7 +628,7 @@ def test_schema(normalize, expected_schema):
             # https://github.com/pydantic/pydantic/issues/3753#issuecomment-1060850457
             default=...,
         )
-        dessert_optional: Optional[DessertEnum] = None
+        dessert_optional: DessertEnum | None = None
         dessert_required: DessertEnum
 
     class ParamSpider(Args[Params], Spider):

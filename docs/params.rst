@@ -37,8 +37,10 @@ as its parameter:
     from scrapy import Request, Spider
     from scrapy_spider_metadata import Args
 
+
     class MyParams(BaseModel):
         pages: int
+
 
     class MySpider(Args[MyParams], Spider):
         name = "my_spider"

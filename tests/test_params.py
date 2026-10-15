@@ -59,7 +59,6 @@ def test_no_params():
 
 
 PATTERN = r"^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
-USING_PYDANTIC_1 = version.parse(str(PYDANTIC_VERSION)) < version.parse("2")
 USING_PYDANTIC_29 = version.parse(str(PYDANTIC_VERSION)) >= version.parse("2.9")
 
 
@@ -297,130 +296,8 @@ USING_PYDANTIC_29 = version.parse(str(PYDANTIC_VERSION)) >= version.parse("2.9")
                 "type": "object",
             },
             marks=pytest.mark.skipif(
-                USING_PYDANTIC_1 or USING_PYDANTIC_29,
-                reason="Expectations for Pydantic 2.0-2.8",
-            ),
-        ),
-        # Expectations for Pydantic 1.x
-        pytest.param(
-            False,
-            {
-                "definitions": {
-                    "DessertEnum": {
-                        "enum": ["cake", "cookie"],
-                        "title": "DessertEnum",
-                        "description": "An enumeration.",
-                        "type": "string",
-                    },
-                    "FruitEnum": {
-                        "enum": ["pear", "banana"],
-                        "title": "FruitEnum",
-                        "description": "An enumeration.",
-                        "type": "string",
-                    },
-                    "ToolEnum": {
-                        "enum": [1, 2],
-                        "title": "ToolEnum",
-                        "description": "An enumeration.",
-                        "type": "integer",
-                    },
-                    "WaterEnum": {
-                        "enum": ["still", "sparkling"],
-                        "title": "WaterEnum",
-                        "description": "An enumeration.",
-                        "type": "string",
-                    },
-                },
-                "properties": {
-                    "field": {
-                        "title": "A Team",
-                        "description": "This is a description of the A team.",
-                        "type": "integer",
-                        "json_schema_extra": {"foo": "bar"},
-                        "default": 0,
-                    },
-                    "int_with_default": {
-                        "title": "Int With Default",
-                        "type": "integer",
-                        "default": 1,
-                    },
-                    "int_optional": {
-                        "title": "Int Optional",
-                        "type": "integer",  # https://github.com/pydantic/pydantic/issues/1270
-                    },
-                    "int_optional_without_default": {
-                        "title": "Int Optional Without Default",
-                        "type": "integer",  # https://github.com/pydantic/pydantic/issues/1270
-                    },
-                    "number_without_default": {
-                        "title": "Number Without Default",
-                        "type": "number",
-                    },
-                    "phone": {
-                        "title": "Phone",
-                        "type": "string",
-                        "minLength": 3,
-                        "maxLength": 100,
-                        "pattern": PATTERN,
-                    },
-                    "yesno": {
-                        "title": "Yesno",
-                        "type": "boolean",
-                    },
-                    "fruit": {
-                        "allOf": [{"$ref": "#/definitions/FruitEnum"}],
-                        "title": "Fruit name",
-                        "json_schema_extra": {
-                            "enumMeta": {
-                                "pear": {
-                                    "title": "Pear",
-                                    "description": "Pyrus fruit",
-                                },
-                                "banana": {
-                                    "title": "Banana",
-                                    "description": "Love fruit",
-                                },
-                            },
-                        },
-                    },
-                    "tool": {
-                        "allOf": [{"$ref": "#/definitions/ToolEnum"}],
-                        "default": 2,
-                    },
-                    "water": {
-                        "allOf": [{"$ref": "#/definitions/WaterEnum"}],
-                        "json_schema_extra": {
-                            "enumMeta": {
-                                "still": {
-                                    "title": "Still water",
-                                },
-                                "sparkling": {
-                                    "title": "Sparkling water",
-                                    "video": "https://www.youtube.com/clip/UgkxxervFpv38ILyF_cZeHuat3sVNwmCy8pF",
-                                },
-                            },
-                        },
-                    },
-                    "dessert_optional": {
-                        "$ref": "#/definitions/DessertEnum",
-                    },
-                    "dessert_required": {
-                        "$ref": "#/definitions/DessertEnum",
-                    },
-                },
-                "required": [
-                    "number_without_default",
-                    "phone",
-                    "yesno",
-                    "fruit",
-                    "water",
-                    "dessert_required",
-                ],
-                "title": "Params",
-                "type": "object",
-            },
-            marks=pytest.mark.skipif(
-                not USING_PYDANTIC_1, reason="Expectations for Pydantic 1.x"
+                USING_PYDANTIC_29,
+                reason="Expectations for Pydantic < 2.9",
             ),
         ),
         # Normalized
@@ -446,21 +323,11 @@ USING_PYDANTIC_29 = version.parse(str(PYDANTIC_VERSION)) >= version.parse("2.9")
                             "anyOf": [{"type": "integer"}, {"type": "null"}],
                             "default": None,
                         }
-                        if not USING_PYDANTIC_1
-                        else {
-                            "title": "Int Optional",
-                            "type": "integer",
-                        }
                     ),
                     "int_optional_without_default": (
                         {
                             "title": "Int Optional Without Default",
                             "anyOf": [{"type": "integer"}, {"type": "null"}],
-                        }
-                        if not USING_PYDANTIC_1
-                        else {
-                            "title": "Int Optional Without Default",
-                            "type": "integer",
                         }
                     ),
                     "number_without_default": {
@@ -520,12 +387,6 @@ USING_PYDANTIC_29 = version.parse(str(PYDANTIC_VERSION)) >= version.parse("2.9")
                             "anyOf": [{"type": "string"}, {"type": "null"}],
                             "default": None,
                         }
-                        if not USING_PYDANTIC_1
-                        else {
-                            "title": "Dessert Optional",
-                            "enum": ["cake", "cookie"],
-                            "type": "string",
-                        }
                     ),
                     "dessert_required": {
                         "title": "Dessert Required",
@@ -533,14 +394,8 @@ USING_PYDANTIC_29 = version.parse(str(PYDANTIC_VERSION)) >= version.parse("2.9")
                         "type": "string",
                     },
                 },
-                "required": (
-                    [
-                        "int_optional_without_default",
-                    ]
-                    if not USING_PYDANTIC_1
-                    else []
-                )
-                + [
+                "required": [
+                    "int_optional_without_default",
                     "number_without_default",
                     "phone",
                     "yesno",
@@ -719,7 +574,6 @@ def test_param_subclass_reword_description():
     }
 
 
-@pytest.mark.skipif(USING_PYDANTIC_1, reason="Requires Pydantic 2.x")
 def test_subclass_config_extension():
     from pydantic import ConfigDict
 

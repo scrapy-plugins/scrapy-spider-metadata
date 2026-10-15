@@ -45,10 +45,7 @@ class Args(Generic[ParamSpecT]):
         param_model = get_generic_param(cls, Args)
         assert param_model is not None
         assert issubclass(param_model, BaseModel)
-        try:
-            param_schema = param_model.model_json_schema()
-        except AttributeError:  # pydantic 1.x
-            param_schema = param_model.schema()
+        param_schema = param_model.model_json_schema()
         if normalize:
             normalize_param_schema(param_schema)
         return param_schema

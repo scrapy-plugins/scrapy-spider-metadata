@@ -54,6 +54,12 @@ filename = "scrapy_spider_metadata/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
+[[tool.bumpversion.files]]
+filename = "CHANGES.rst"
+search = "\\(unreleased\\)$"
+replace = "({now:%Y-%m-%d})"
+regex = true
+
 [tool.coverage.run]
 branch = true
 

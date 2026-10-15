@@ -34,10 +34,16 @@ jobs:
     - name: tox
       run: |
         tox -e ${{ matrix.toxenv || 'py' }}
-    - name: coverage
+    - name: Upload coverage report
       uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Upload test results
+      if: ${{ !cancelled() }}
+      uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        report_type: test_results
   check:
     runs-on: ubuntu-latest
     strategy:

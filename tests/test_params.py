@@ -1,4 +1,4 @@
-from enum import Enum, IntEnum
+from enum import IntEnum, StrEnum
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
@@ -555,7 +555,7 @@ USING_PYDANTIC_29 = version.parse(str(PYDANTIC_VERSION)) >= version.parse("2.9")
     ],
 )
 def test_schema(normalize, expected_schema):
-    class FruitEnum(str, Enum):
+    class FruitEnum(StrEnum):
         pear = "pear"
         banana = "banana"
 
@@ -563,11 +563,11 @@ def test_schema(normalize, expected_schema):
         spanner = 1
         wrench = 2
 
-    class WaterEnum(str, Enum):
+    class WaterEnum(StrEnum):
         still = "still"
         sparkling = "sparkling"
 
-    class DessertEnum(str, Enum):
+    class DessertEnum(StrEnum):
         cake = "cake"
         cookie = "cookie"
 

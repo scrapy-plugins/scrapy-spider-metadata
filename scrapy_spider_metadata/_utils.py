@@ -30,17 +30,11 @@ def _normalize_param(key: str, value: dict[str, Any], defs: dict[str, Any], /) -
         def_id = ref.rsplit("/", maxsplit=1)[1]
         return cast("dict[str, Any]", defs[def_id])
 
-    extra = value.pop("json_schema_extra", None)
-    if extra:
-        # pydantic 1.x
-        value.update(extra)
-
     allof = value.pop("allOf", None)
     if allof is not None:
         for entry in allof:
             ref = entry.pop("$ref", None)
-            if ref:
-                entry.update(get_def(ref))
+            entry.update(get_def(ref))
             entry.pop("title", None)
             entry.pop("description", None)
             value.update(entry)
@@ -52,8 +46,7 @@ def _normalize_param(key: str, value: dict[str, Any], defs: dict[str, Any], /) -
             if not ref:
                 continue
             def_copy = copy.copy(get_def(ref))
-            if "type" in def_copy:
-                entry["type"] = def_copy.pop("type")
+            entry["type"] = def_copy.pop("type")
             def_copy.pop("title", None)
             def_copy.pop("description", None)
             value.update(def_copy)
@@ -74,8 +67,5 @@ def normalize_param_schema(schema: dict[str, Any], /) -> None:
     if not params:
         return
     defs = schema.pop("$defs", None)
-    if not defs:
-        # pydantic 1.x
-        defs = schema.pop("definitions", None)
     for key, value in params.items():
         _normalize_param(key, value, defs)

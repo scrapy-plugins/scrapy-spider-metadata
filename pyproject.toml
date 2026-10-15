@@ -15,7 +15,6 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -25,11 +24,10 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
     "Typing :: Typed",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
-    "packaging>=14.1",
-    "pydantic>=1.9",
-    "scrapy>=1.0.0",
+    "pydantic>=2.0",
+    "scrapy>=2.7.0",
 ]
 dynamic = ["version"]
 
@@ -55,6 +53,12 @@ tag_name = "{new_version}"
 filename = "scrapy_spider_metadata/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "CHANGES.rst"
+search = "\\(unreleased\\)$"
+replace = "({now:%Y-%m-%d})"
+regex = true
 
 [tool.coverage.run]
 branch = true
@@ -184,11 +188,6 @@ ignore = [
 
 [tool.ruff.lint.flake8-type-checking]
 runtime-evaluated-base-classes = ["pydantic.BaseModel"]
-
-[tool.ruff.lint.per-file-ignores]
-# `from __future__ import annotations` breaks Pydantic 1.x
-# Pydantic version-specific imports are done inside the tests
-"tests/test_params.py" = ["FA100", "PLC0415"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "pep257"

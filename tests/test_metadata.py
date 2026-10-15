@@ -1,7 +1,7 @@
 from scrapy import Spider
 
 from scrapy_spider_metadata import Args, get_spider_metadata
-from tests.test_params import Params, get_expected_schema
+from tests.test_params import Params
 
 
 def test_metadata_empty():
@@ -36,7 +36,7 @@ def test_metadata_params():
     assert get_spider_metadata(MySpider) == {
         "description": "This is my spider.",
         "category": "My basic spiders",
-        "param_schema": get_expected_schema(Params),
+        "param_schema": Params.model_json_schema(),
     }
 
 

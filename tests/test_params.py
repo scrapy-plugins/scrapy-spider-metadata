@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 from enum import IntEnum, StrEnum
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 import pytest
 from packaging import version
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
+from pydantic_core import PydanticUndefined
 from scrapy import Spider
 
 from scrapy_spider_metadata import Args, get_spider_metadata
@@ -21,13 +24,6 @@ class Params(BaseModel):
 
 class ParamSpider(Args[Params], Spider):
     name = "params"
-
-
-def get_expected_schema(params: type[BaseModel]) -> dict[str, Any]:
-    try:
-        return params.model_json_schema()
-    except AttributeError:  # pydantic 1.x
-        return params.schema()
 
 
 def test_convert():
@@ -443,9 +439,6 @@ def test_schema(normalize, expected_schema):
             min_length=3,
             max_length=100,
             pattern=PATTERN,
-            # pydantic 1.x
-            # https://github.com/pydantic/pydantic/issues/3753#issuecomment-1060850457
-            default=...,
         )
         yesno: bool
         fruit: FruitEnum = Field(
@@ -462,9 +455,6 @@ def test_schema(normalize, expected_schema):
                     },
                 },
             },
-            # pydantic 1.x
-            # https://github.com/pydantic/pydantic/issues/3753#issuecomment-1060850457
-            default=...,
         )
         tool: ToolEnum = ToolEnum.wrench
         water: WaterEnum = Field(
@@ -479,9 +469,6 @@ def test_schema(normalize, expected_schema):
                     },
                 },
             },
-            # pydantic 1.x
-            # https://github.com/pydantic/pydantic/issues/3753#issuecomment-1060850457
-            default=...,
         )
         dessert_optional: DessertEnum | None = None
         dessert_required: DessertEnum
@@ -528,11 +515,6 @@ def test_param_subclass_set_default():
 
 
 def test_param_subclass_unset_default():
-    try:
-        from pydantic.fields import PydanticUndefined  # type: ignore[attr-defined]
-    except ImportError:
-        pytest.skip("No pydantic.fields.PydanticUndefined")
-
     class ParentParams(BaseModel):
         a: str = Field(default="b")
 
@@ -575,7 +557,6 @@ def test_param_subclass_reword_description():
 
 
 def test_subclass_config_extension():
-    from pydantic import ConfigDict
 
     class ParentParams(BaseModel):
         model_config = ConfigDict(

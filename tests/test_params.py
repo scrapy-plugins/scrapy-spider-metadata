@@ -537,17 +537,8 @@ def test_param_subclass_reword_description():
     class ParentParams(BaseModel):
         a: str = Field(description="Parent description")
 
-    parent_a = {
-        **ParentParams.model_json_schema()["properties"]["a"],
-        "description": "Description",
-    }
-    parent_type = parent_a.pop("type")
-
     class Params(ParentParams):
-        a: str = Field(  # type: ignore[misc]
-            json_schema_extra={"type": parent_type},
-            **parent_a,
-        )
+        a: str = Field(description="Description")
 
     class ParamSpider(Args[Params], Spider):
         name = "params"

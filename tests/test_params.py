@@ -538,9 +538,7 @@ def test_param_subclass_reword_description():
         a: str = Field(description="Parent description")
 
     class Params(ParentParams):
-        a: str = Field(  # type: ignore[misc]
-            **{**ParentParams.schema()["properties"]["a"], "description": "Description"}
-        )
+        a: str = Field(description="Description")
 
     class ParamSpider(Args[Params], Spider):
         name = "params"

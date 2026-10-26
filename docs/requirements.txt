@@ -4,7 +4,7 @@ alabaster==1.0.0
     # via sphinx
 babel==2.18.0
     # via sphinx
-certifi==2026.7.22
+certifi==2026.10.19
     # via requests
 charset-normalizer==3.5.2
     # via requests
@@ -52,7 +52,7 @@ sphinx-last-updated-by-git==0.3.8
 sphinx-llm-friendly==0.7.0
     # via sphinx-scrapy
 sphinx-scrapy==0.13.0
-    # via -r docs/requirements.in
+    # via -r requirements.in
 sphinx-sitemap==2.9.0
     # via sphinx-scrapy
 sphinxcontrib-applehelp==2.0.0
